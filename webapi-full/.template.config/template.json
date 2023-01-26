@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Stratis Dermanoutsos",
+    "classifications": [
+        "Web API",
+        "C#",
+        "ASP.NET Core"
+    ],
+    "identity": "WebAPI.FullImplementation",
+    "name": "Web API Full implementation",
+    "shortName": "webapi-full",
+    "sourceName": "webapi_full",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    }
+}
