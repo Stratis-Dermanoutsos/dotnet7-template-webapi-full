@@ -52,7 +52,7 @@ builder.Services.AddSwaggerGen(options => {
 //? Add DbContext and its settings
 Log.Information("Connecting to database...");
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlite(builder.Configuration.GetConnectionString("Demo"))
 );
 
 //? Versioning
