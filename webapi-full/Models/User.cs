@@ -14,11 +14,6 @@ public class User : IndexedObject
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    [Column("User_Name")]
-    [JsonPropertyName("username")]
-    public string Username { get; set; } = string.Empty;
-
-    [Required]
     [Column("Password")]
     [JsonIgnore]
     public string Password { get; set; } = string.Empty;
@@ -33,8 +28,7 @@ public class User : IndexedObject
     [JsonPropertyName("lastName")]
     public string LastName { get; set; } = string.Empty;
 
-    [Required]
-    [Column("Role_Id")]
-    [JsonPropertyName("roleId")]
-    public int Role { get; set; }
+    [NotMapped]
+    [JsonIgnore]
+    public string FullName => $"{this.FirstName} {this.LastName}";
 }
