@@ -9,11 +9,9 @@ public class Logged : ActionFilterAttribute
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         string method = context.HttpContext.Request.Method;
-        string version = context.RouteData.Values["version"]?.ToString() ?? "Unknown";
-        string controller = context.RouteData.Values["controller"]?.ToString() ?? "Unknown";
-        string action = context.RouteData.Values["action"]?.ToString() ?? "Unknown";
+        string path = context.HttpContext.Request.Path;
 
-        Log.Information($"{method}: api/v{version}/{controller}/{action}");
+        Log.Information($"{method}: {path}");
 
         base.OnActionExecuting(context);
     }
