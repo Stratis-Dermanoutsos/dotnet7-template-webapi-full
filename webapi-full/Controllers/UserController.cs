@@ -110,6 +110,8 @@ public class UserController : ControllerBase
         this.dbContext.Users.Add(user);
         this.dbContext.SaveChanges();
 
+        Log.Information($"Registered user '{user.UserName}'.");
+
         return Ok(user.DateIn);
     }
 
@@ -150,6 +152,8 @@ public class UserController : ControllerBase
             claims,
             expires: DateTime.UtcNow.AddMinutes(25),
             signingCredentials: signIn);
+
+        Log.Information($"User '{user.UserName}' logged in.");
 
         return Ok(new JwtSecurityTokenHandler().WriteToken(token));
     }
