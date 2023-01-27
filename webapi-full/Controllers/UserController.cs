@@ -35,10 +35,57 @@ public class UserController : ControllerBase
     /// <summary>
     /// Get all users.
     /// </summary>
-    [Authorize]
     [HttpGet]
     [Route("all")]
     public IActionResult GetAll() => Ok(this.dbContext.Users.GetAll());
+
+    /// <summary>
+    /// Get the logged user.
+    /// </summary>
+    [Authorize]
+    [HttpGet]
+    public IActionResult Get()
+    {
+        int id = userUtils.GetLoggedUserId(this.User);
+
+        User? user = this.dbContext.Users.Get(id);
+
+        if (user is null)
+            throw new BadRequestException($"Could not retrieve the user's information.");
+
+        return Ok(user);
+    }
+
+    /// <summary>
+    /// Get user by username.
+    /// </summary>
+    [HttpGet]
+    [Route("{userName}")]
+    public IActionResult GetByUserName(string userName)
+    {
+        User? user = userUtils.GetByUserName(userName);
+
+        if (user is null)
+            throw new NotFoundException($"There is no user account associated with the username '{userName}'.");
+
+        return Ok(user);
+    }
+
+    /// <summary>
+    /// Get user by id.
+    /// </summary>
+    [Authorize]
+    [HttpGet]
+    [Route("{id:int}")]
+    public IActionResult GetById(int id)
+    {
+        User? user = this.dbContext.Users.Get(id);
+
+        if (user is null)
+            throw new NotFoundException($"There is no user account associated with the id '{id}'.");
+
+        return Ok(user);
+    }
 
     /// <summary>
     /// Create a new user account.
