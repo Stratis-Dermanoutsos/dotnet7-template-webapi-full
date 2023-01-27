@@ -1,7 +1,6 @@
 
 
 using Microsoft.AspNetCore.Mvc.Filters;
-using Serilog;
 
 namespace webapi_full.Attributes;
 

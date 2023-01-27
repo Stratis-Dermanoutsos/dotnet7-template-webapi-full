@@ -1,10 +1,11 @@
+global using Serilog;
+
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Serilog;
 using webapi_full;
 using webapi_full.Extensions;
 using webapi_full.IUtils;
