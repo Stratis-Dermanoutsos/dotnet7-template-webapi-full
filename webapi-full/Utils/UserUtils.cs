@@ -14,8 +14,10 @@ public class UserUtils : IUserUtils
     {
         ClaimsIdentity? claimsIdentity = principal.Identity as ClaimsIdentity;
 
-        return Convert.ToInt32(claimsIdentity?.FindFirst("Id")?.Value);
+        return Convert.ToInt32(claimsIdentity?.FindFirst(ClaimTypes.Sid)?.Value);
     }
 
-    public User? GetByEmail(string email) => this.context.Users.FirstOrDefault(user => user.Email == email);
+    public User? GetByEmail(string email) => this.context.Users.FirstOrDefault(user => user.Email.Equals(email));
+
+    public User? GetByUserName(string userName) => this.context.Users.FirstOrDefault(user => user.UserName.Equals(userName));
 }
