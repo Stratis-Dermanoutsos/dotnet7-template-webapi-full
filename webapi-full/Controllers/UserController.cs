@@ -46,9 +46,7 @@ public class UserController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        int id = userUtils.GetLoggedUserId(this.User);
-
-        User? user = this.dbContext.Users.Get(id);
+        User? user = userUtils.GetLoggedUser(this.User);
 
         if (user is null)
             throw new BadRequestException($"Could not retrieve the user's information.");

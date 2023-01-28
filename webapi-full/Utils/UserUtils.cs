@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using webapi_full.Extensions;
 using webapi_full.IUtils;
 using webapi_full.Models;
 
@@ -16,6 +17,8 @@ public class UserUtils : IUserUtils
 
         return Convert.ToInt32(claimsIdentity?.FindFirst(ClaimTypes.Sid)?.Value);
     }
+
+    public User? GetLoggedUser(ClaimsPrincipal principal) => this.context.Users.Get(this.GetLoggedUserId(principal));
 
     public User? GetByEmail(string email) => this.context.Users.FirstOrDefault(user => user.Email.Equals(email));
 
