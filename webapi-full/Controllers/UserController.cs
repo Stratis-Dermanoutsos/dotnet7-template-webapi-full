@@ -86,6 +86,27 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
+    /// Delete a user by id.
+    /// </summary>
+    [Authorize]
+    [HttpDelete]
+    [Route("{id:int}")]
+    public IActionResult Delete(int id)
+    {
+        User? user = this.dbContext.Users.GetAll().Get(id);
+
+        if (user is null)
+            throw new NotFoundException($"There is no user account associated with the id '{id}'.");
+
+        this.dbContext.Users.Remove(user);
+        this.dbContext.SaveChanges();
+
+        Log.Information($"Deleted user '{user.UserName}'.");
+
+        return Ok(user.FullName);
+    }
+
+    /// <summary>
     /// Create a new user account.
     /// <br/>
     /// <paramref name="entity" />: The user's information.
