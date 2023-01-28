@@ -30,12 +30,13 @@ This is a template meant to setup a fully implemented Web API application using 
 
 ## Technologies
 
-- [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
-- [ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-7.0)
+- [.NET 7](https://dotnet.microsoft.com)
+- [ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core)
 - [BCrypt](https://github.com/BcryptNet/bcrypt.net)
 - [Entity Framework](https://learn.microsoft.com/en-us/ef/)
 - [Jwt](https://jwt.io)
 - [Serilog](https://serilog.net)
+- [SQLite](https://sqlite.org)
 - [Swagger](https://swagger.io)
 
 ## Usage
