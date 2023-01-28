@@ -200,4 +200,54 @@ public class UserController : ControllerBase
         return Ok(new JwtSecurityTokenHandler().WriteToken(token));
     }
     #endregion
+
+    #region PUT methods
+    /// <summary>
+    /// Update a user's information.
+    /// <br/>
+    /// <paramref name="id" />: The user's id.
+    /// <br/>
+    /// <paramref name="entity" />: The user's new information.
+    /// </summary>
+    [Authorize]
+    [HttpPut("{id:int}")]
+    public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserToUpdate entity)
+    {
+        User? user = this.dbContext.Users.Get(id);
+
+        if (user is null)
+            throw new NotFoundException($"There is no user account associated with the id '{id}'.");
+
+        //* Check if email exists
+        if (entity.Email != user.Email && userUtils.GetByEmail(entity.Email) is not null)
+            throw new ConflictException($"Email {entity.Email} belongs to another user.");
+
+        //* Check if userName exists
+        if (entity.UserName != user.UserName && userUtils.GetByUserName(entity.UserName) is not null)
+            throw new ConflictException($"Username {entity.UserName} belongs to another user.");
+
+        //* Update the user's information
+        user = entity.MergeToUser(user);
+
+        //* Update the user
+        this.dbContext.Users.Update(user);
+        this.dbContext.SaveChanges();
+
+        return Ok(user.FullName);
+    }
+
+    /// <summary>
+    /// Update the logged user's information.
+    /// <br/>
+    /// <paramref name="entity" />: The user's new information.
+    /// </summary>
+    [Authorize]
+    [HttpPut]
+    public IActionResult UpdateLoggedUser([FromBody] UserToUpdate entity)
+    {
+        int id = this.userUtils.GetLoggedUserId(this.User);
+
+        return this.UpdateUser(id, entity);
+    }
+    #endregion
 }
