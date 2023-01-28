@@ -22,8 +22,23 @@ public static class DbContextExtension
     /// <paramref name="id" />
     /// <param name="id">: The id to search for.</param>
     /// <br />
-    /// <returns>Returns an <paramref name="Entity" /> with the given <paramref name="id" />.</returns>
+    /// <returns>
+    /// Returns an <paramref name="Entity" /> with the given <paramref name="id" />.
+    /// If the <paramref name="Entity" /> is not found, null is returned instead.
+    /// </returns>
     /// </summary>
     public static T? Get<T>(this IQueryable<T> entities, int id)
-        where T : IndexedObject => entities.FirstOrDefault(i => i.Id == id);
+        where T : IndexedObject => entities.SingleOrDefault(i => i.Id == id);
+
+    /// <summary>
+    /// <paramref name="entities" />
+    /// <param name="entities">: The entities to query.</param>
+    /// <br />
+    /// <paramref name="id" />
+    /// <param name="id">: The id to search for.</param>
+    /// <br />
+    /// <returns>Returns an <paramref name="Entity" /> with the given <paramref name="id" />.</returns>
+    /// </summary>
+    public static T GetAssured<T>(this IQueryable<T> entities, int id)
+        where T : IndexedObject => entities.Single(i => i.Id == id);
 }

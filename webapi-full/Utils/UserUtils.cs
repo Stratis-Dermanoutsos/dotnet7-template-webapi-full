@@ -18,9 +18,9 @@ public class UserUtils : IUserUtils
         return Convert.ToInt32(claimsIdentity?.FindFirst(ClaimTypes.Sid)?.Value);
     }
 
-    public User? GetLoggedUser(ClaimsPrincipal principal) => this.context.Users.Get(this.GetLoggedUserId(principal));
+    public User GetLoggedUser(ClaimsPrincipal principal) => this.context.Users.GetAssured(this.GetLoggedUserId(principal));
 
-    public User? GetByEmail(string email) => this.context.Users.FirstOrDefault(user => user.Email.Equals(email));
+    public User? GetByEmail(string email) => this.context.Users.SingleOrDefault(user => user.Email.Equals(email));
 
-    public User? GetByUserName(string userName) => this.context.Users.FirstOrDefault(user => user.UserName.Equals(userName));
+    public User? GetByUserName(string userName) => this.context.Users.SingleOrDefault(user => user.UserName.Equals(userName));
 }

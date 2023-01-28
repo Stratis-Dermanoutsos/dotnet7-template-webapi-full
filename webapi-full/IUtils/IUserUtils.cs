@@ -20,7 +20,7 @@ public interface IUserUtils
     /// If the User is not found, null is returned instead.
     /// </returns>
     /// </summary>
-    User? GetLoggedUser(ClaimsPrincipal principal);
+    User GetLoggedUser(ClaimsPrincipal principal);
 
     /// <summary>
     /// Get a user by email.
