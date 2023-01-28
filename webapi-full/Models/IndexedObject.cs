@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace webapi_full.Models;
 
@@ -20,4 +21,9 @@ public class IndexedObject
     [Column("Date_Edit")]
     [JsonIgnore]
     public DateTime DateEdit { get; set; } = DateTime.Now;
+
+    [Required]
+    [Column("Is_Deleted", TypeName = "bit")]
+    [JsonIgnore]
+    public bool IsDeleted { get; set; } = false;
 }

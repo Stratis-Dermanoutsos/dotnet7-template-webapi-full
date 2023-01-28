@@ -7,6 +7,7 @@ public interface IUserUtils
 {
     /// <summary>
     /// Get the Id of the currently signed in user.
+    /// <br />
     /// <returns>Returns the Id of the User object.</returns>
     /// </summary>
     int GetLoggedUserId(ClaimsPrincipal principal);

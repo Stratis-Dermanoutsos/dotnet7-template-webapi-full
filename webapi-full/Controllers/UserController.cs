@@ -110,10 +110,15 @@ public class UserController : ControllerBase
         if (user is null)
             throw new NotFoundException($"There is no user account associated with the id '{id}'.");
 
+        if (user.Id == userUtils.GetLoggedUserId(this.User))
+            throw new BadRequestException("You cannot delete your own account.");
+
+        string usernameOld = user.UserName;
+
         this.dbContext.Users.Remove(user);
         this.dbContext.SaveChanges();
 
-        Log.Information($"Deleted user '{user.UserName}'.");
+        Log.Information($"Deleted user '{usernameOld}'.");
 
         return Ok(user.FullName);
     }

@@ -9,11 +9,11 @@ public static class DbContextExtension
     /// <param name="entities">: The entities to get.</param>
     /// <br />
     /// <returns>Returns an <paramref name="IQueryable" /> containing all objects of type
-    /// <paramref name="T" /> with positive <paramref name="Id" />.
-    /// <br />Negative <paramref name="Id" /> means the entry was deleted</returns>
+    /// <paramref name="T" /> not marked as deleted.
+    /// </returns>
     /// </summary>
     public static IQueryable<T> GetAll<T>(this IQueryable<T> entities)
-        where T : IndexedObject => entities.Where(i => i.Id > 0);
+        where T : IndexedObject => entities.Where(i => !i.IsDeleted);
 
     /// <summary>
     /// <paramref name="entities" />

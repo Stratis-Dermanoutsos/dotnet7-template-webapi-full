@@ -19,9 +19,9 @@ public class ApplicationDbContext : DbContext
     /// Overriden to
     /// <br />
     /// <list type="bullet">
-    /// <item>set <paramref name="Date_In" /> on creation</item>
-    /// <item>update <paramref name="Date_Edit" /> on any change</item>
-    /// <item>set <paramref name="Id" /> to -1 on deletion</item>
+    /// <item>set <paramref name="DateIn" /> on creation</item>
+    /// <item>update <paramref name="DateEdit" /> on any change</item>
+    /// <item>set <paramref name="IsDeleted" /> flag to 1 on deletion</item>
     /// </list>
     /// automatically.
     /// </summary>
@@ -43,7 +43,7 @@ public class ApplicationDbContext : DbContext
             if (entityEntry.State == EntityState.Added)
                 ((IndexedObject)entityEntry.Entity).DateIn = DateTime.Now;
 
-            //* Set the Id to -1 and keep the entity on deletion
+            //* Set the IsDeleted flag and keep the entity on deletion
             if (entityEntry.State == EntityState.Deleted) {
                 /**
                  * If the entity is a user,
@@ -57,7 +57,7 @@ public class ApplicationDbContext : DbContext
                 }
 
                 entityEntry.State = EntityState.Modified;
-                ((IndexedObject)entityEntry.Entity).Id = -1;
+                ((IndexedObject)entityEntry.Entity).IsDeleted = true;
             }
         }
 
