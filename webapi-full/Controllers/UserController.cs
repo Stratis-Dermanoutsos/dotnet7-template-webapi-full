@@ -246,5 +246,54 @@ public class UserController : ControllerBase
 
         return this.UpdateUser(id, entity);
     }
+
+    /// <summary>
+    /// Update a user's password.
+    /// <br/>
+    /// <paramref name="id" />: The user's id.
+    /// <br/>
+    /// <paramref name="entity" />: The new passwords.
+    /// </summary>
+    [Authorize]
+    [HttpPut("password/{id:int}")]
+    public IActionResult UpdatePassword([FromRoute] int id, [FromBody] PasswordConfirm entity)
+    {
+        if (!entity.Password.Equals(entity.PasswordConfirmation))
+            throw new BadRequestException("Passwords do not match.");
+
+        User? user = this.dbContext.Users.Get(id);
+
+        if (user is null)
+            throw new NotFoundException($"There is no user account associated with the id '{id}'.");
+
+        if (encryptionUtils.Check(entity.Password, user.Password))
+            throw new BadRequestException("The new password must be different from the old one.");
+
+        //* Set the user's new password
+        user.Password = this.encryptionUtils.Encrypt(entity.Password);
+
+        //* Update the user
+        this.dbContext.Users.Update(user);
+        this.dbContext.SaveChanges();
+
+        return Ok(user.FullName);
+    }
+
+    /// <summary>
+    /// Update the logged user's password.
+    /// <br/>
+    /// <paramref name="entity" />: The user's old and new passwords.
+    /// </summary>
+    [Authorize]
+    [HttpPut("password")]
+    public IActionResult UpdateLoggedUserPassword([FromBody] PasswordToUpdate entity)
+    {
+        User user = this.userUtils.GetLoggedUser(this.User);
+
+        if (!encryptionUtils.Check(entity.OldPassword, user.Password))
+            throw new UnauthorizedException("Wrong password.");
+
+        return this.UpdatePassword(user.Id, entity);
+    }
     #endregion
 }
