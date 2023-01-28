@@ -131,6 +131,12 @@ public class UserController : ControllerBase
     [Route("register")]
     public IActionResult Register([FromBody] UserToCreate entity)
     {
+        try {
+            this.passwordUtils.Validate(entity.Password);
+        } catch (Exception ex) {
+            throw new BadRequestException(ex.Message);
+        }
+
         //* Check if email exists
         if (this.userUtils.GetByEmail(entity.Email) is not null)
             throw new ConflictException($"Email {entity.Email} belongs to another user.");
@@ -260,6 +266,12 @@ public class UserController : ControllerBase
     {
         if (!entity.Password.Equals(entity.PasswordConfirmation))
             throw new BadRequestException("Passwords do not match.");
+
+        try {
+            this.passwordUtils.Validate(entity.Password);
+        } catch (Exception ex) {
+            throw new BadRequestException(ex.Message);
+        }
 
         User? user = this.dbContext.Users.Get(id);
 

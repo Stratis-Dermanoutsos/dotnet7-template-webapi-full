@@ -24,4 +24,12 @@ public interface IPasswordUtils
     /// <returns>Returns True if the values match.</returns>
     /// </summary>
     bool Check(string value, string encryptedValue);
+
+    /// <summary>
+    /// <paramref name="value" />
+    /// <param name="value">: The value to validate.</param>
+    /// <br />
+    /// Throws if the value is invalid based on the rules set.
+    /// </summary>
+    void Validate(string value);
 }
