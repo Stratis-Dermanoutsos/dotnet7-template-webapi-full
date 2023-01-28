@@ -2,7 +2,7 @@ using webapi_full.IUtils;
 
 namespace webapi_full.Utils;
 
-public class EncryptionUtils : IEncryptionUtils
+public class PasswordUtils : IPasswordUtils
 {
     /// <inheritdoc />
     public string Encrypt(string value) => BCrypt.Net.BCrypt.HashPassword(value);

@@ -4,7 +4,7 @@ namespace webapi_full.IUtils;
 /// This interface contains the methods for the encryption utils.
 /// It uses the BCrypt API.
 /// </summary>
-public interface IEncryptionUtils
+public interface IPasswordUtils
 {
     /// <summary>
     /// <paramref name="value" />

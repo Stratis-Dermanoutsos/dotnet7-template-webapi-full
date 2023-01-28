@@ -96,7 +96,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 //? Add my custom utilities to be injected by the controllers
 builder.Services.AddScoped<IUserUtils, UserUtils>();
-builder.Services.AddScoped<IEncryptionUtils, EncryptionUtils>();
+builder.Services.AddScoped<IPasswordUtils, PasswordUtils>();
 
 //? Add my custom middleware for injection
 builder.Services.AddTransient<ExceptionMiddleware>();
