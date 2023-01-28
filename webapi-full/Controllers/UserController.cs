@@ -32,6 +32,7 @@ public class UserController : ControllerBase
         this.userUtils = userUtils;
     }
 
+    #region GET methods
     /// <summary>
     /// Get all users.
     /// </summary>
@@ -84,7 +85,9 @@ public class UserController : ControllerBase
 
         return Ok(user);
     }
+    #endregion
 
+    #region DELETE methods
     /// <summary>
     /// Delete a user by id.
     /// </summary>
@@ -105,7 +108,9 @@ public class UserController : ControllerBase
 
         return Ok(user.FullName);
     }
+    #endregion
 
+    #region POST methods
     /// <summary>
     /// Create a new user account.
     /// <br/>
@@ -176,4 +181,5 @@ public class UserController : ControllerBase
 
         return Ok(new JwtSecurityTokenHandler().WriteToken(token));
     }
+    #endregion
 }
