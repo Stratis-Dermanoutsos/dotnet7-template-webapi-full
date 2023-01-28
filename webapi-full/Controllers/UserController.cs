@@ -38,7 +38,14 @@ public class UserController : ControllerBase
     /// </summary>
     [HttpGet]
     [Route("all")]
-    public IActionResult GetAll() => Ok(this.dbContext.Users.GetAll());
+    public IActionResult GetAll()
+    {
+        IQueryable<User> users = this.dbContext.Users.GetAll();
+
+        Log.Information($"Retrieved {users.Count()} users.");
+
+        return Ok(users);
+    }
 
     /// <summary>
     /// Get the logged user.
@@ -51,6 +58,8 @@ public class UserController : ControllerBase
 
         if (user is null)
             throw new BadRequestException($"Could not retrieve the user's information.");
+
+        Log.Information($"Retrieved user '{user.UserName}'.");
 
         return Ok(user);
     }
@@ -124,6 +133,10 @@ public class UserController : ControllerBase
         if (userUtils.GetByEmail(entity.Email) is not null)
             throw new ConflictException($"Email {entity.Email} belongs to another user.");
 
+        //* Check if userName exists
+        if (userUtils.GetByUserName(entity.UserName) is not null)
+            throw new ConflictException($"Username {entity.UserName} belongs to another user.");
+
         //* Get the User object
         User user = entity.ToUser();
 
@@ -136,7 +149,7 @@ public class UserController : ControllerBase
 
         Log.Information($"Registered user '{user.UserName}'.");
 
-        return Ok(user.DateIn);
+        return Ok(user.FullName);
     }
 
     /// <summary>
