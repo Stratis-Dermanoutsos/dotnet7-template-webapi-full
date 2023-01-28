@@ -21,6 +21,21 @@ public class PasswordUtils : IPasswordUtils
         StringBuilder errorMessage = new();
         errorMessage.Append("<ul class='password-validation'>");
 
+        //? Not allow whitespace
+        if (value.Contains(" "))
+            errorMessage.Append("<li class='invalid'>Value cannot contain whitespaces.</li>");
+
+        //? Allowed only specific non-alphanumeric
+        if (!string.IsNullOrWhiteSpace(validator.AllowedNonAlphanumeric) && !value.All(char.IsLetterOrDigit)) {
+            errorMessage.Append("<li class='");
+            errorMessage.Append(
+                value.Any(c => !char.IsLetterOrDigit(c)
+                && !validator.AllowedNonAlphanumeric.Contains(c))
+                    ? "invalid"
+                    : "valid");
+            errorMessage.Append($"'>The only allowed special characters are the following: {string.Join(", ", validator.AllowedNonAlphanumeric.ToCharArray())}</li>");
+        }
+
         //? Maximum length
         if (validator.MaxLength > 0) {
             errorMessage.Append("<li class='");
@@ -39,14 +54,14 @@ public class PasswordUtils : IPasswordUtils
         if (validator.RequireDigit) {
             errorMessage.Append("<li class='");
             errorMessage.Append(!value.Any(char.IsDigit) ? "invalid" : "valid");
-            errorMessage.Append($"'>Value must contain at least one digit.</li>");
+            errorMessage.Append("'>Value must contain at least one digit.</li>");
         }
 
         //? Require lowercase
         if (validator.RequireLowercase) {
             errorMessage.Append("<li class='");
             errorMessage.Append(!value.Any(char.IsLower) ? "invalid" : "valid");
-            errorMessage.Append($"'>Value must contain at least one lowercase letter.</li>");
+            errorMessage.Append("'>Value must contain at least one lowercase letter.</li>");
         }
 
         //? Require non-alphanumeric
@@ -64,7 +79,7 @@ public class PasswordUtils : IPasswordUtils
         if (validator.RequireUppercase) {
             errorMessage.Append("<li class='");
             errorMessage.Append(!value.Any(char.IsUpper) ? "invalid" : "valid");
-            errorMessage.Append($"'>Value must contain at least one uppercase letter.</li>");
+            errorMessage.Append("'>Value must contain at least one uppercase letter.</li>");
         }
 
         errorMessage.Append("</ul>");
