@@ -4,6 +4,10 @@ namespace webapi_full.Utils;
 
 public class PasswordUtils : IPasswordUtils
 {
+    private readonly PasswordValidator validator;
+
+    public PasswordUtils(PasswordValidator validator) => this.validator = validator;
+
     /// <inheritdoc />
     public string Encrypt(string value) => BCrypt.Net.BCrypt.HashPassword(value);
 

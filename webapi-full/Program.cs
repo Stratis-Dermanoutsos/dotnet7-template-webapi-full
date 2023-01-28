@@ -94,11 +94,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-//? Add my custom utilities to be injected by the controllers
+//? Register custom utilities for injection
 builder.Services.AddScoped<IUserUtils, UserUtils>();
 builder.Services.AddScoped<IPasswordUtils, PasswordUtils>();
 
-//? Add my custom middleware for injection
+//? Load PasswordValidator settings and register for injection
+builder.Services.AddSingleton<PasswordValidator>(
+    builder.Configuration.GetSection("PasswordValidator")
+        .Get<PasswordValidator>() ??
+    new PasswordValidator());
+
+//? Register custom middleware for injection
 builder.Services.AddTransient<ExceptionMiddleware>();
 
 var app = builder.Build();
