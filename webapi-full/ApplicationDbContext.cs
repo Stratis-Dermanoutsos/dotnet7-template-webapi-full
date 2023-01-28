@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using webapi_full.Models;
 
@@ -18,8 +19,9 @@ public class ApplicationDbContext : DbContext
     /// Overriden to
     /// <br />
     /// <list type="bullet">
-    /// <item>set the default values for the <paramref name="Date_In" /> and <paramref name="Date_Edit" /> on creation</item>
-    /// <item>update <paramref name="Date_Edit" /> on update</item>
+    /// <item>set <paramref name="DateIn" /> on creation</item>
+    /// <item>update <paramref name="DateEdit" /> on any change</item>
+    /// <item>set <paramref name="IsDeleted" /> flag to 1 on deletion</item>
     /// </list>
     /// automatically.
     /// </summary>
@@ -27,14 +29,36 @@ public class ApplicationDbContext : DbContext
     {
         var entries = ChangeTracker
             .Entries()
-            .Where(e => e.Entity is IndexedObject && (e.State == EntityState.Modified || e.State == EntityState.Added));
+            .Where(e => e.Entity is IndexedObject && (
+                e.State == EntityState.Added ||
+                e.State == EntityState.Modified ||
+                e.State == EntityState.Deleted));
 
         foreach (var entityEntry in entries)
         {
+            //* Change the DateEdit on any change
             ((IndexedObject)entityEntry.Entity).DateEdit = DateTime.Now;
 
+            //* Set the DateIn on creation of the entity
             if (entityEntry.State == EntityState.Added)
                 ((IndexedObject)entityEntry.Entity).DateIn = DateTime.Now;
+
+            //* Set the IsDeleted flag and keep the entity on deletion
+            if (entityEntry.State == EntityState.Deleted) {
+                /**
+                 * If the entity is a user,
+                 * - remove the password and
+                 * - change the secondary keys
+                 */
+                if (entityEntry.Entity is User user) {
+                    user.Password = string.Empty;
+                    user.Email = $"(deleted-{user.Id}){user.Email}";
+                    user.UserName = $"(deleted-{user.Id}){user.UserName}";
+                }
+
+                entityEntry.State = EntityState.Modified;
+                ((IndexedObject)entityEntry.Entity).IsDeleted = true;
+            }
         }
 
         return base.SaveChanges();

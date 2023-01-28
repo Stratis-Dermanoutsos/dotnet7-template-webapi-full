@@ -5,24 +5,24 @@ namespace webapi_full.Entities.Request;
 /// <summary>
 /// The user's information.
 /// </summary>
-public class UserToCreate
+public class UserToUpdate
 {
     public string Email { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Convert the <see cref="UserToCreate" /> to a <see cref="User" />.
+    /// Merge the <see cref="UserToUpdate" /> to a <see cref="User" />.
     /// </summary>
     /// <returns>The <see cref="User" />.</returns>
-    public User ToUser() => new()
+    public User MergeToUser(User user)
     {
-        Email = this.Email,
-        UserName = this.UserName,
-        Password = this.Password,
-        FirstName = this.FirstName,
-        LastName = this.LastName
-    };
+        user.Email = this.Email;
+        user.UserName = this.UserName;
+        user.FirstName = this.FirstName;
+        user.LastName = this.LastName;
+
+        return user;
+    }
 }

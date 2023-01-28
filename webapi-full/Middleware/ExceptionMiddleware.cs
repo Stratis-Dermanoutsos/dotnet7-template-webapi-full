@@ -1,6 +1,5 @@
 using System.Net;
 using Newtonsoft.Json;
-using Serilog;
 using Serilog.Context;
 using webapi_full.Entities.Response;
 using webapi_full.Exceptions;
