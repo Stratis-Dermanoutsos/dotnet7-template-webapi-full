@@ -54,7 +54,7 @@ public class UserController : ControllerBase
     [HttpGet]
     public IActionResult GetLoggedUser()
     {
-        User? user = userUtils.GetLoggedUser(this.User);
+        User? user = this.userUtils.GetLoggedUser(this.User);
 
         if (user is null)
             throw new BadRequestException($"Could not retrieve the user's information.");
@@ -71,7 +71,7 @@ public class UserController : ControllerBase
     [Route("{userName}")]
     public IActionResult GetByUserName([FromRoute] string userName)
     {
-        User? user = userUtils.GetByUserName(userName);
+        User? user = this.userUtils.GetByUserName(userName);
 
         if (user is null)
             throw new NotFoundException($"There is no user account associated with the username '{userName}'.");
@@ -110,7 +110,7 @@ public class UserController : ControllerBase
         if (user is null)
             throw new NotFoundException($"There is no user account associated with the id '{id}'.");
 
-        if (user.Id == userUtils.GetLoggedUserId(this.User))
+        if (user.Id == this.userUtils.GetLoggedUserId(this.User))
             throw new BadRequestException("You cannot delete your own account.");
 
         string usernameOld = user.UserName;
@@ -135,11 +135,11 @@ public class UserController : ControllerBase
     public IActionResult Register([FromBody] UserToCreate entity)
     {
         //* Check if email exists
-        if (userUtils.GetByEmail(entity.Email) is not null)
+        if (this.userUtils.GetByEmail(entity.Email) is not null)
             throw new ConflictException($"Email {entity.Email} belongs to another user.");
 
         //* Check if userName exists
-        if (userUtils.GetByUserName(entity.UserName) is not null)
+        if (this.userUtils.GetByUserName(entity.UserName) is not null)
             throw new ConflictException($"Username {entity.UserName} belongs to another user.");
 
         //* Get the User object
@@ -166,7 +166,7 @@ public class UserController : ControllerBase
     [Route("login")]
     public IActionResult Login([FromBody] UserCredentials credentials)
     {
-        User? user = userUtils.GetByEmail(credentials.Email);
+        User? user = this.userUtils.GetByEmail(credentials.Email);
 
         if (user is null)
             throw new NotFoundException($"There is no user account associated with the email address '{credentials.Email}'.");
@@ -219,11 +219,11 @@ public class UserController : ControllerBase
             throw new NotFoundException($"There is no user account associated with the id '{id}'.");
 
         //* Check if email exists
-        if (entity.Email != user.Email && userUtils.GetByEmail(entity.Email) is not null)
+        if (entity.Email != user.Email && this.userUtils.GetByEmail(entity.Email) is not null)
             throw new ConflictException($"Email {entity.Email} belongs to another user.");
 
         //* Check if userName exists
-        if (entity.UserName != user.UserName && userUtils.GetByUserName(entity.UserName) is not null)
+        if (entity.UserName != user.UserName && this.userUtils.GetByUserName(entity.UserName) is not null)
             throw new ConflictException($"Username {entity.UserName} belongs to another user.");
 
         //* Update the user's information
