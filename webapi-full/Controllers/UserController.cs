@@ -52,7 +52,7 @@ public class UserController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet]
-    public IActionResult Get()
+    public IActionResult GetLoggedUser()
     {
         User? user = userUtils.GetLoggedUser(this.User);
 
@@ -69,7 +69,7 @@ public class UserController : ControllerBase
     /// </summary>
     [HttpGet]
     [Route("{userName}")]
-    public IActionResult GetByUserName(string userName)
+    public IActionResult GetByUserName([FromRoute] string userName)
     {
         User? user = userUtils.GetByUserName(userName);
 
@@ -85,7 +85,7 @@ public class UserController : ControllerBase
     [Authorize]
     [HttpGet]
     [Route("{id:int}")]
-    public IActionResult GetById(int id)
+    public IActionResult GetById([FromRoute] int id)
     {
         User? user = this.dbContext.Users.Get(id);
 
@@ -103,7 +103,7 @@ public class UserController : ControllerBase
     [Authorize]
     [HttpDelete]
     [Route("{id:int}")]
-    public IActionResult Delete(int id)
+    public IActionResult Delete([FromRoute] int id)
     {
         User? user = this.dbContext.Users.GetAll().Get(id);
 
