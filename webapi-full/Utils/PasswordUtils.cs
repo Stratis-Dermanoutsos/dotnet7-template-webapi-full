@@ -22,7 +22,7 @@ public class PasswordUtils : IPasswordUtils
         errorMessage.Append("<ul class='password-validation'>");
 
         //? Not allow whitespace
-        if (value.Contains(" "))
+        if (value.Any(Char.IsWhiteSpace))
             errorMessage.Append("<li class='invalid'>Password cannot contain whitespaces.</li>");
 
         //? Allowed only specific non-alphanumeric
