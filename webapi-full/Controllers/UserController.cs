@@ -20,15 +20,15 @@ namespace webapi_full.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ApplicationDbContext dbContext;
-    private readonly IEncryptionUtils encryptionUtils;
+    private readonly IPasswordUtils passwordUtils;
     private readonly IConfiguration configuration;
     private readonly IUserUtils userUtils;
 
-    public UserController(IConfiguration configuration, ApplicationDbContext dbContext, IEncryptionUtils encryptionUtils, IUserUtils userUtils)
+    public UserController(IConfiguration configuration, ApplicationDbContext dbContext, IPasswordUtils passwordUtils, IUserUtils userUtils)
     {
         this.configuration = configuration;
         this.dbContext = dbContext;
-        this.encryptionUtils = encryptionUtils;
+        this.passwordUtils = passwordUtils;
         this.userUtils = userUtils;
     }
 
@@ -131,6 +131,12 @@ public class UserController : ControllerBase
     [Route("register")]
     public IActionResult Register([FromBody] UserToCreate entity)
     {
+        try {
+            this.passwordUtils.Validate(entity.Password);
+        } catch (Exception ex) {
+            throw new BadRequestException(ex.Message);
+        }
+
         //* Check if email exists
         if (this.userUtils.GetByEmail(entity.Email) is not null)
             throw new ConflictException($"Email {entity.Email} belongs to another user.");
@@ -143,7 +149,7 @@ public class UserController : ControllerBase
         User user = entity.ToUser();
 
         //* Encrypt the user's password
-        user.Password = this.encryptionUtils.Encrypt(user.Password);
+        user.Password = this.passwordUtils.Encrypt(user.Password);
 
         //* Add the user to the database
         this.dbContext.Users.Add(user);
@@ -168,7 +174,7 @@ public class UserController : ControllerBase
         if (user is null)
             throw new NotFoundException($"There is no user account associated with the email address '{credentials.Email}'.");
 
-        if (!encryptionUtils.Check(credentials.Password, user.Password))
+        if (!passwordUtils.Check(credentials.Password, user.Password))
             throw new BadRequestException("Wrong email or password.");
 
         //* Create claims details based on the user information
@@ -261,16 +267,22 @@ public class UserController : ControllerBase
         if (!entity.Password.Equals(entity.PasswordConfirmation))
             throw new BadRequestException("Passwords do not match.");
 
+        try {
+            this.passwordUtils.Validate(entity.Password);
+        } catch (Exception ex) {
+            throw new BadRequestException(ex.Message);
+        }
+
         User? user = this.dbContext.Users.Get(id);
 
         if (user is null)
             throw new NotFoundException($"There is no user account associated with the id '{id}'.");
 
-        if (encryptionUtils.Check(entity.Password, user.Password))
+        if (passwordUtils.Check(entity.Password, user.Password))
             throw new BadRequestException("The new password must be different from the old one.");
 
         //* Set the user's new password
-        user.Password = this.encryptionUtils.Encrypt(entity.Password);
+        user.Password = this.passwordUtils.Encrypt(entity.Password);
 
         //* Update the user
         this.dbContext.Users.Update(user);
@@ -290,7 +302,7 @@ public class UserController : ControllerBase
     {
         User user = this.userUtils.GetLoggedUser(this.User);
 
-        if (!encryptionUtils.Check(entity.OldPassword, user.Password))
+        if (!passwordUtils.Check(entity.OldPassword, user.Password))
             throw new UnauthorizedException("Wrong password.");
 
         return this.UpdatePassword(user.Id, entity);

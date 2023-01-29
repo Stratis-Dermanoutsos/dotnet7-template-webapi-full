@@ -4,7 +4,7 @@ namespace webapi_full.IUtils;
 /// This interface contains the methods for the encryption utils.
 /// It uses the BCrypt API.
 /// </summary>
-public interface IEncryptionUtils
+public interface IPasswordUtils
 {
     /// <summary>
     /// <paramref name="value" />
@@ -24,4 +24,12 @@ public interface IEncryptionUtils
     /// <returns>Returns True if the values match.</returns>
     /// </summary>
     bool Check(string value, string encryptedValue);
+
+    /// <summary>
+    /// <paramref name="value" />
+    /// <param name="value">: The value to validate.</param>
+    /// <br />
+    /// Throws if the value is invalid based on the rules set.
+    /// </summary>
+    void Validate(string value);
 }

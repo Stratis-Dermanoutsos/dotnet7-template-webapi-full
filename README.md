@@ -12,21 +12,29 @@ This is a template meant to setup a fully implemented Web API application using 
 
 ## What to expect
 
-- Fully customized and automated logs that change file by the day automatically to keep readable.
+- Fully customizable and automated logs that change files on a daily interval for readability.
+
+  > Edit values in *appsettings.json* file to personalize
 
   This includes:
   - Route calls
   - Exceptions (with unique exception IDs for easier debugging)
   - Server setup steps
-- Version-ready services
+- Versioned services
+- User credentials validations
+  - Customizable password validation
+  
+    > Edit values in *appsettings.json* file to personalize
 - JWT authentication
 
   This includes:
   - User creation
-  - Login and session initiation
+  - Login and sessions
   - Password encryption
   - Both public and authenticated services
-- Database (**SQLite**) already setup
+- Database-ready
+  - *SQLite* already setup
+  - Easily change to another DBMS.
 
 ## Technologies
 
