@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Security.Claims;
 using webapi_full.Extensions;
 using webapi_full.IUtils;
@@ -23,4 +24,13 @@ public class UserUtils : IUserUtils
     public User? GetByEmail(string email) => this.context.Users.SingleOrDefault(user => user.Email.Equals(email));
 
     public User? GetByUserName(string userName) => this.context.Users.SingleOrDefault(user => user.UserName.Equals(userName));
+
+    public void ValidateEmail(string email)
+    {
+        try {
+            var addr = new MailAddress(email);
+        } catch (Exception) {
+            throw new ArgumentException("Invalid email address.");
+        }
+    }
 }
