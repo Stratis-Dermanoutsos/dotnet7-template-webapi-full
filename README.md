@@ -25,6 +25,8 @@ This is a template meant to setup a fully implemented Web API application using 
   - Customizable password validation
   
     > Edit values in *appsettings.json* file to personalize
+  - Email validation
+  - Username validation
 - JWT authentication
 
   This includes:
