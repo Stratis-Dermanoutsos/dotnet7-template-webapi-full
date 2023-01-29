@@ -135,7 +135,7 @@ public class UserController : ControllerBase
         try {
             this.userUtils.ValidateEmail(entity.Email);
             this.passwordUtils.Validate(entity.Password);
-            // TODO: Validate username
+            this.userUtils.ValidateUserName(entity.UserName);
         } catch (Exception exception) {
             throw new BadRequestException(exception.Message);
         }
@@ -222,7 +222,7 @@ public class UserController : ControllerBase
         //* Validate user's information
         try {
             this.userUtils.ValidateEmail(entity.Email);
-            // TODO: Validate username
+            this.userUtils.ValidateUserName(entity.UserName);
         } catch (Exception exception) {
             throw new BadRequestException(exception.Message);
         }

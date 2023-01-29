@@ -54,4 +54,13 @@ public interface IUserUtils
     /// Throws if the email is invalid.
     /// </summary>
     void ValidateEmail(string value);
+
+    /// <summary>
+    /// Validate username.
+    /// <br/>
+    /// <paramref name="value" />: The username to validate.
+    /// <br/>
+    /// Throws if the username is invalid.
+    /// </summary>
+    void ValidateUserName(string value);
 }
