@@ -131,10 +131,13 @@ public class UserController : ControllerBase
     [Route("register")]
     public IActionResult Register([FromBody] UserToCreate entity)
     {
+        //* Validate credentials
         try {
+            this.userUtils.ValidateEmail(entity.Email);
             this.passwordUtils.Validate(entity.Password);
-        } catch (Exception ex) {
-            throw new BadRequestException(ex.Message);
+            this.userUtils.ValidateUserName(entity.UserName);
+        } catch (Exception exception) {
+            throw new BadRequestException(exception.Message);
         }
 
         //* Check if email exists
@@ -216,6 +219,14 @@ public class UserController : ControllerBase
     [HttpPut("{id:int}")]
     public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserToUpdate entity)
     {
+        //* Validate user's information
+        try {
+            this.userUtils.ValidateEmail(entity.Email);
+            this.userUtils.ValidateUserName(entity.UserName);
+        } catch (Exception exception) {
+            throw new BadRequestException(exception.Message);
+        }
+
         User? user = this.dbContext.Users.Get(id);
 
         if (user is null)
@@ -267,10 +278,11 @@ public class UserController : ControllerBase
         if (!entity.Password.Equals(entity.PasswordConfirmation))
             throw new BadRequestException("Passwords do not match.");
 
+        //* Validate the password
         try {
             this.passwordUtils.Validate(entity.Password);
-        } catch (Exception ex) {
-            throw new BadRequestException(ex.Message);
+        } catch (Exception exception) {
+            throw new BadRequestException(exception.Message);
         }
 
         User? user = this.dbContext.Users.Get(id);

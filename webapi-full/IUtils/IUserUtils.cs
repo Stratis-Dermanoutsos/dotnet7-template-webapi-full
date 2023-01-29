@@ -45,4 +45,22 @@ public interface IUserUtils
     /// </returns>
     /// </summary>
     User? GetByUserName(string userName);
+
+    /// <summary>
+    /// Validate an email address.
+    /// <br/>
+    /// <paramref name="value" />: The email to validate.
+    /// <br/>
+    /// Throws if the email is invalid.
+    /// </summary>
+    void ValidateEmail(string value);
+
+    /// <summary>
+    /// Validate username.
+    /// <br/>
+    /// <paramref name="value" />: The username to validate.
+    /// <br/>
+    /// Throws if the username is invalid.
+    /// </summary>
+    void ValidateUserName(string value);
 }
