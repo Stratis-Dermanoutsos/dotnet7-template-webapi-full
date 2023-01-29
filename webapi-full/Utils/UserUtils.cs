@@ -30,6 +30,11 @@ public class UserUtils : IUserUtils
     {
         try {
             var addr = new MailAddress(value);
+
+            //? Handle special cases
+            if (!value.Any(c => c.Equals('@')) || value.Any(Char.IsWhiteSpace)
+                || !value.Any(c => c.Equals('.')) || value.EndsWith('.'))
+                throw new Exception();
         } catch (Exception) {
             throw new ArgumentException("Invalid email address.");
         }
