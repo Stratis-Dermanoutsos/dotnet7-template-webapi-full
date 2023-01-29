@@ -25,10 +25,10 @@ public class UserUtils : IUserUtils
 
     public User? GetByUserName(string userName) => this.context.Users.SingleOrDefault(user => user.UserName.Equals(userName));
 
-    public void ValidateEmail(string email)
+    public void ValidateEmail(string value)
     {
         try {
-            var addr = new MailAddress(email);
+            var addr = new MailAddress(value);
         } catch (Exception) {
             throw new ArgumentException("Invalid email address.");
         }

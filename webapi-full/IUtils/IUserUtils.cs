@@ -49,9 +49,9 @@ public interface IUserUtils
     /// <summary>
     /// Validate an email address.
     /// <br/>
-    /// <paramref name="email" />: The email to validate.
+    /// <paramref name="value" />: The email to validate.
     /// <br/>
     /// Throws if the email is invalid.
     /// </summary>
-    void ValidateEmail(string email);
+    void ValidateEmail(string value);
 }
