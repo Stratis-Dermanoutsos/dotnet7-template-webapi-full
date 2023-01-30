@@ -112,6 +112,7 @@ There are 4 **DataBase Management Systems** that I will include.
 > Of course, there are more but these are the ones I've worked with the most.
 
 - [SQL Server](#sql-server)
+- [PostgreSQL](#postgresql)
 
 ### SQL Server
 
@@ -139,6 +140,35 @@ There are 4 **DataBase Management Systems** that I will include.
    ```c#
    builder.Services.AddDbContext<ApplicationDbContext>(options => 
      options.UseSqlServer(builder.Configuration.GetConnectionString("Demo"))
+   );
+   ```
+
+### PostgreSQL
+
+1. Install the Entity Framework connector package
+
+   ```zsh
+   dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+   ```
+
+2. Change the connection string in *appsettings.json* to something like this:
+
+   ```json
+   {
+     "ConnectionStrings": {
+       "Demo": "Host=localhost:5432;Database=<DATABASE>;Username=<USERNAME>"
+     },
+     ...
+   }
+   ```
+
+3. Change the setup of your `DbContext` class to use Postgres.
+
+   > This is done inside *Program.cs*.
+
+   ```c#
+   builder.Services.AddDbContext<ApplicationDbContext>(options => 
+     options.UseNpgsql(builder.Configuration.GetConnectionString("Demo"))
    );
    ```
 
