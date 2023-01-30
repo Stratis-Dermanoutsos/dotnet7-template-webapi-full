@@ -7,6 +7,7 @@ This is a template meant to setup a fully implemented Web API application using 
 - [What to expect](#what-to-expect)
 - [Technologies](#technologies)
 - [Usage](#usage)
+- [Swap DBMS](#swap-dbms)
 - [Uninstall](#uninstall)
 - [License](#license)
 
@@ -102,6 +103,43 @@ This is a template meant to setup a fully implemented Web API application using 
 
    ```zsh
    dotnet watch run
+   ```
+
+## Swap DBMS
+
+There are 4 **DataBase Management Systems** that I will include.
+
+> Of course, there are more but these are the ones I've worked with the most.
+
+- [SQL Server](#sql-server)
+
+### SQL Server
+
+1. Install the Entity Framework connector package
+
+   ```zsh
+   dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+   ```
+
+2. Change the connection string in *appsettings.json* to something like this:
+
+   ```json
+   {
+     "ConnectionStrings": {
+       "Demo": "Server=<SERVER_NAME>;Database=<DATABASE_NAME>;Trusted_Connection=true;MultipleActiveResultSets=true;Trust Server Certificate=true"
+     },
+     ...
+   }
+   ```
+
+3. Change the setup of your `DbContext` class to use SQL Server.
+
+   > This is done inside *Program.cs*.
+
+   ```c#
+   builder.Services.AddDbContext<ApplicationDbContext>(options => 
+     options.UseSqlServer(builder.Configuration.GetConnectionString("Demo"))
+   );
    ```
 
 ## Uninstall
