@@ -116,7 +116,7 @@ There are 4 **DataBase Management Systems** that I will include.
 
 ### SQL Server
 
-1. Install the Entity Framework connector package
+1. Install the Entity Framework connector package.
 
    ```zsh
    dotnet add package Microsoft.EntityFrameworkCore.SqlServer
@@ -133,7 +133,7 @@ There are 4 **DataBase Management Systems** that I will include.
    }
    ```
 
-3. Change the setup of your `DbContext` class to use SQL Server.
+3. Modify your `ApplicationDbContext` service to use **SQL Server**.
 
    > This is done inside *Program.cs*.
 
@@ -145,7 +145,7 @@ There are 4 **DataBase Management Systems** that I will include.
 
 ### PostgreSQL
 
-1. Install the Entity Framework connector package
+1. Install the Entity Framework connector package.
 
    ```zsh
    dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
@@ -162,7 +162,7 @@ There are 4 **DataBase Management Systems** that I will include.
    }
    ```
 
-3. Change the setup of your `DbContext` class to use Postgres.
+3. Modify your `ApplicationDbContext` service to use **PostgreSQL**.
 
    > This is done inside *Program.cs*.
 
