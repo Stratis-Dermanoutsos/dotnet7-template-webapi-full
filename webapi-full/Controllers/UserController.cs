@@ -117,7 +117,7 @@ public class UserController : ControllerBase
 
         Log.Information($"Deleted user '{usernameOld}'.");
 
-        return Ok(user.FullName);
+        return Ok(user);
     }
     #endregion
 
@@ -160,7 +160,7 @@ public class UserController : ControllerBase
 
         Log.Information($"Registered user '{user.UserName}'.");
 
-        return Ok(user.FullName);
+        return Ok(user);
     }
 
     /// <summary>
@@ -247,7 +247,7 @@ public class UserController : ControllerBase
         this.dbContext.Users.Update(user);
         this.dbContext.SaveChanges();
 
-        return Ok(user.FullName);
+        return Ok(user);
     }
 
     /// <summary>
@@ -300,7 +300,7 @@ public class UserController : ControllerBase
         this.dbContext.Users.Update(user);
         this.dbContext.SaveChanges();
 
-        return Ok(user.FullName);
+        return Ok(user);
     }
 
     /// <summary>
