@@ -7,6 +7,7 @@ This is a template meant to setup a fully implemented Web API application using 
 - [What to expect](#what-to-expect)
 - [Technologies](#technologies)
 - [Usage](#usage)
+- [Swap DBMS](#swap-dbms)
 - [Uninstall](#uninstall)
 - [License](#license)
 
@@ -14,17 +15,18 @@ This is a template meant to setup a fully implemented Web API application using 
 
 - Fully customizable and automated logs that change files on a daily interval for readability.
 
-  > Edit values in *appsettings.json* file to personalize
+  > Edit values in *appsettings.json* file to personalize.
 
   This includes:
-  - Route calls
+  - Routes called
+  - Users' actions
   - Exceptions (with unique exception IDs for easier debugging)
   - Server setup steps
 - Versioned services
 - User credentials validations
   - Customizable password validation
   
-    > Edit values in *appsettings.json* file to personalize
+    > Edit values in *appsettings.json* file to personalize.
   - Email validation
   - Username validation
 - JWT authentication
@@ -36,7 +38,7 @@ This is a template meant to setup a fully implemented Web API application using 
   - Both public and authenticated services
 - Database-ready
   - *SQLite* already setup
-  - Easily change to another DBMS.
+  - Easily swap DBMS
 
 ## Technologies
 
@@ -102,6 +104,75 @@ This is a template meant to setup a fully implemented Web API application using 
 
    ```zsh
    dotnet watch run
+   ```
+
+## Swap DBMS
+
+There are 2 **DataBase Management Systems** that I will include.
+
+- [SQL Server](#sql-server)
+- [PostgreSQL](#postgresql)
+
+> Of course, there are more but these are the ones I've worked with the most.
+>
+> For more *Data Providers*, visit [the official EF Core documentation](https://learn.microsoft.com/en-us/ef/core/providers).
+
+### SQL Server
+
+1. Install the Entity Framework connector package.
+
+   ```zsh
+   dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+   ```
+
+2. Change the connection string in *appsettings.json* to something like this:
+
+   ```json
+   {
+     "ConnectionStrings": {
+       "Demo": "Server=<SERVER_NAME>;Database=<DATABASE_NAME>;Trusted_Connection=true;MultipleActiveResultSets=true;Trust Server Certificate=true"
+     },
+     ...
+   }
+   ```
+
+3. Modify your `ApplicationDbContext` service to use **SQL Server**.
+
+   > This is done inside *Program.cs*.
+
+   ```c#
+   builder.Services.AddDbContext<ApplicationDbContext>(options => 
+     options.UseSqlServer(builder.Configuration.GetConnectionString("Demo"))
+   );
+   ```
+
+### PostgreSQL
+
+1. Install the Entity Framework connector package.
+
+   ```zsh
+   dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+   ```
+
+2. Change the connection string in *appsettings.json* to something like this:
+
+   ```json
+   {
+     "ConnectionStrings": {
+       "Demo": "Host=localhost:5432;Database=<DATABASE>;Username=<USERNAME>"
+     },
+     ...
+   }
+   ```
+
+3. Modify your `ApplicationDbContext` service to use **PostgreSQL**.
+
+   > This is done inside *Program.cs*.
+
+   ```c#
+   builder.Services.AddDbContext<ApplicationDbContext>(options => 
+     options.UseNpgsql(builder.Configuration.GetConnectionString("Demo"))
+   );
    ```
 
 ## Uninstall
