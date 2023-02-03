@@ -108,12 +108,14 @@ This is a template meant to setup a fully implemented Web API application using 
 
 ## Swap DBMS
 
-There are 4 **DataBase Management Systems** that I will include.
-
-> Of course, there are more but these are the ones I've worked with the most.
+There are 2 **DataBase Management Systems** that I will include.
 
 - [SQL Server](#sql-server)
 - [PostgreSQL](#postgresql)
+
+> Of course, there are more but these are the ones I've worked with the most.
+>
+> For more *Data Providers*, visit [the official EF Core documentation](https://learn.microsoft.com/en-us/ef/core/providers).
 
 ### SQL Server
 
