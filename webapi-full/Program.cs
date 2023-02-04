@@ -88,6 +88,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .GetBytes(builder.Configuration["Jwt:Key"] ??
                     throw new ArgumentNullException("JWT key is null")))
         };
+        //? Custom extension method to handle JWT errors (401 & 403)
+        options.SetupJwtBearerEvents();
     });
 
 //? Add authorization
