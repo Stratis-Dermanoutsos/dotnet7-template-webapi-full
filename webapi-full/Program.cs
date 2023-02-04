@@ -2,11 +2,13 @@ global using Serilog;
 
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using webapi_full;
+using webapi_full.Enums;
 using webapi_full.Extensions;
 using webapi_full.IUtils;
 using webapi_full.Middleware;
@@ -76,7 +78,7 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-//? Add authorization
+//? Add authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -94,9 +96,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+//? Add authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("admin", policy => policy.Requirements.Add(new RoleRequirement(Role.Admin)));
+    options.AddPolicy("user", policy => policy.Requirements.Add(new RoleRequirement(Role.User)));
+});
+
 //? Register custom utilities for injection
 builder.Services.AddScoped<IUserUtils, UserUtils>();
 builder.Services.AddScoped<IPasswordUtils, PasswordUtils>();
+builder.Services.AddSingleton<IAuthorizationHandler, RoleAuthorizationHandler>();
 
 //? Load PasswordValidator settings and register for injection
 builder.Services.AddSingleton<PasswordValidator>(
