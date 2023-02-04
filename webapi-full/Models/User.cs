@@ -7,6 +7,7 @@ using webapi_full.Enums;
 namespace webapi_full.Models;
 
 [PrimaryKey("Id")]
+[Table("User")]
 public class User : IndexedObject
 {
     [Key]
