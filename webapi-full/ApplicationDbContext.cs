@@ -16,7 +16,12 @@ public class ApplicationDbContext : DbContext
         this.configuration = configuration;
         this.passwordUtils = passwordUtils;
 
-        this.CreateDefaultAdmin();
+        try {
+            Database.Migrate();
+            this.CreateDefaultAdmin();
+        } catch (Exception) {
+            Database.EnsureCreated();
+        }
     }
 
     //? Entries used to add data to the database
