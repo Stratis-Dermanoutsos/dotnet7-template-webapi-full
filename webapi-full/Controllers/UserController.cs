@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using webapi_full.Attributes;
 using webapi_full.Entities.Request;
+using webapi_full.Enums;
 using webapi_full.Exceptions;
 using webapi_full.Extensions;
 using webapi_full.IUtils;
@@ -50,7 +51,7 @@ public class UserController : ControllerBase
     /// <summary>
     /// Get the logged user.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "user")]
     [HttpGet]
     public IActionResult GetLoggedUser()
     {
@@ -79,7 +80,7 @@ public class UserController : ControllerBase
     /// <summary>
     /// Get user by id.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "admin")]
     [HttpGet]
     [Route("{id:int}")]
     public IActionResult GetById([FromRoute] int id)
@@ -97,7 +98,7 @@ public class UserController : ControllerBase
     /// <summary>
     /// Delete a user by id.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "admin")]
     [HttpDelete]
     [Route("{id:int}")]
     public IActionResult Delete([FromRoute] int id)
@@ -188,7 +189,8 @@ public class UserController : ControllerBase
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                 new Claim(ClaimTypes.Sid, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, ((int)user.Role).ToString())
             };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["Jwt:Key"] ??
@@ -215,7 +217,7 @@ public class UserController : ControllerBase
     /// <br/>
     /// <paramref name="entity" />: The user's new information.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "admin")]
     [HttpPut("{id:int}")]
     public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserToUpdate entity)
     {
@@ -255,7 +257,7 @@ public class UserController : ControllerBase
     /// <br/>
     /// <paramref name="entity" />: The user's new information.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "user")]
     [HttpPut]
     public IActionResult UpdateLoggedUser([FromBody] UserToUpdate entity)
     {
@@ -271,7 +273,7 @@ public class UserController : ControllerBase
     /// <br/>
     /// <paramref name="entity" />: The new passwords.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "admin")]
     [HttpPut("password/{id:int}")]
     public IActionResult UpdatePassword([FromRoute] int id, [FromBody] PasswordConfirm entity)
     {
@@ -308,7 +310,7 @@ public class UserController : ControllerBase
     /// <br/>
     /// <paramref name="entity" />: The user's old and new passwords.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "user")]
     [HttpPut("password")]
     public IActionResult UpdateLoggedUserPassword([FromBody] PasswordToUpdate entity)
     {
