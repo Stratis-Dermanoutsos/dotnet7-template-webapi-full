@@ -132,7 +132,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//? Add my custom middleware
+//? Add my custom exception middleware
 app.UseExceptionMiddleware();
 
 Log.Information("Server is running.");
