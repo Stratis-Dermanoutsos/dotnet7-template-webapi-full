@@ -37,7 +37,7 @@ public class User : IndexedObject
     [Required]
     [Column("Role")]
     [JsonPropertyName("role")]
-    public Role Role { get; set; } = Role.Member;
+    public Role Role { get; set; } = Role.User;
 
     [NotMapped]
     [JsonPropertyName("fullName")]

@@ -2,6 +2,6 @@ namespace webapi_full.Enums;
 
 public enum Role
 {
-    Member = 1,
+    User = 1,
     Admin = 2
 }
