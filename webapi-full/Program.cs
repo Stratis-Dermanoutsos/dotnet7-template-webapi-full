@@ -54,12 +54,6 @@ builder.Services.AddSwaggerGen(options => {
     });
 });
 
-//? Add DbContext and its settings
-Log.Information("Connecting to database...");
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
-    options.UseSqlite(builder.Configuration.GetConnectionString("Demo"))
-);
-
 //? Versioning
 Log.Information("Versioning the API...");
 builder.Services.AddApiVersioning(o =>
@@ -116,6 +110,12 @@ builder.Services.AddSingleton<PasswordValidator>(
 
 //? Register custom middleware for injection
 builder.Services.AddTransient<ExceptionMiddleware>();
+
+//? Add DbContext and its settings
+Log.Information("Connecting to database...");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Demo"))
+);
 
 var app = builder.Build();
 
