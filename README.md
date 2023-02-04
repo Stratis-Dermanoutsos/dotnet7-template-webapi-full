@@ -17,7 +17,6 @@ This is a template meant to setup a fully implemented Web API application using 
 
   > Edit values in *appsettings.json* file to personalize.
 
-  This includes:
   - Routes called
   - Users' actions
   - Exceptions (with unique exception IDs for easier debugging)
@@ -25,17 +24,21 @@ This is a template meant to setup a fully implemented Web API application using 
 - Versioned services
 - User credentials validations
   - Customizable password validation
-  
+
     > Edit values in *appsettings.json* file to personalize.
   - Email validation
   - Username validation
 - JWT authentication
-
-  This includes:
   - User creation
   - Login and sessions
   - Password encryption
   - Both public and authenticated services
+- Role-based authorization
+  - Admin and member accounts
+  - Admin-only services
+  - Default admin user account
+
+    > Edit values in *appsettings.json* file to personalize.
 - Database-ready
   - *SQLite* already setup
   - Easily swap DBMS

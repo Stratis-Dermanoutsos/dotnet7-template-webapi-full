@@ -1,14 +1,28 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using webapi_full.Enums;
+using webapi_full.IUtils;
 using webapi_full.Models;
 
 namespace webapi_full;
 
 public class ApplicationDbContext : DbContext
 {
+    private readonly IConfiguration configuration;
+    private readonly IPasswordUtils passwordUtils;
+
     /// <inheritdoc />
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    { }
+    public ApplicationDbContext(IConfiguration configuration, IPasswordUtils passwordUtils, DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+        this.configuration = configuration;
+        this.passwordUtils = passwordUtils;
+
+        try {
+            Database.Migrate();
+            this.CreateDefaultAdmin();
+        } catch (Exception) {
+            Database.EnsureCreated();
+        }
+    }
 
     //? Entries used to add data to the database
     public DbSet<User> Users => Set<User>();
@@ -62,5 +76,32 @@ public class ApplicationDbContext : DbContext
         }
 
         return base.SaveChanges();
+    }
+
+    /// <summary>
+    /// Creates the default admin user account if it doesn't already exist.
+    /// </summary>
+    private void CreateDefaultAdmin()
+    {
+        if (this.Users.Any(u => u.Role == Role.Admin))
+            return;
+
+        var userInfo = this.configuration.GetSection("DefaultAdmin");
+
+        if (!userInfo.Exists())
+            return;
+
+        this.Users.Add(new()
+        {
+            Email = userInfo.GetValue<string>("Email") ?? string.Empty,
+            UserName = userInfo.GetValue<string>("UserName") ?? string.Empty,
+            FirstName = userInfo.GetValue<string>("FirstName") ?? string.Empty,
+            LastName = userInfo.GetValue<string>("LastName") ?? string.Empty,
+            Password = this.passwordUtils.Encrypt(userInfo.GetValue<string>("Password") ?? string.Empty),
+            Role = Role.Admin
+        });
+        this.SaveChanges();
+
+        Log.Information("Default admin created.");
     }
 }

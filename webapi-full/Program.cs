@@ -2,11 +2,13 @@ global using Serilog;
 
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using webapi_full;
+using webapi_full.Enums;
 using webapi_full.Extensions;
 using webapi_full.IUtils;
 using webapi_full.Middleware;
@@ -52,12 +54,6 @@ builder.Services.AddSwaggerGen(options => {
     });
 });
 
-//? Add DbContext and its settings
-Log.Information("Connecting to database...");
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
-    options.UseSqlite(builder.Configuration.GetConnectionString("Demo"))
-);
-
 //? Versioning
 Log.Information("Versioning the API...");
 builder.Services.AddApiVersioning(o =>
@@ -76,7 +72,7 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-//? Add authorization
+//? Add authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -92,11 +88,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .GetBytes(builder.Configuration["Jwt:Key"] ??
                     throw new ArgumentNullException("JWT key is null")))
         };
+        //? Custom extension method to handle JWT errors (401 & 403)
+        options.SetupJwtBearerEvents();
     });
+
+//? Add authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("admin", policy => policy.Requirements.Add(new RoleRequirement(Role.Admin)));
+    options.AddPolicy("user", policy => policy.Requirements.Add(new RoleRequirement(Role.User)));
+});
 
 //? Register custom utilities for injection
 builder.Services.AddScoped<IUserUtils, UserUtils>();
 builder.Services.AddScoped<IPasswordUtils, PasswordUtils>();
+builder.Services.AddSingleton<IAuthorizationHandler, RoleAuthorizationHandler>();
 
 //? Load PasswordValidator settings and register for injection
 builder.Services.AddSingleton<PasswordValidator>(
@@ -106,6 +112,12 @@ builder.Services.AddSingleton<PasswordValidator>(
 
 //? Register custom middleware for injection
 builder.Services.AddTransient<ExceptionMiddleware>();
+
+//? Add DbContext and its settings
+Log.Information("Connecting to database...");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Demo"))
+);
 
 var app = builder.Build();
 
@@ -122,7 +134,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//? Add my custom middleware
+//? Add my custom exception middleware
 app.UseExceptionMiddleware();
 
 Log.Information("Server is running.");

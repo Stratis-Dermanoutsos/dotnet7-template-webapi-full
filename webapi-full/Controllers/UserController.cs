@@ -50,7 +50,7 @@ public class UserController : ControllerBase
     /// <summary>
     /// Get the logged user.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "user")]
     [HttpGet]
     public IActionResult GetLoggedUser()
     {
@@ -79,7 +79,7 @@ public class UserController : ControllerBase
     /// <summary>
     /// Get user by id.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "admin")]
     [HttpGet]
     [Route("{id:int}")]
     public IActionResult GetById([FromRoute] int id)
@@ -97,7 +97,7 @@ public class UserController : ControllerBase
     /// <summary>
     /// Delete a user by id.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "admin")]
     [HttpDelete]
     [Route("{id:int}")]
     public IActionResult Delete([FromRoute] int id)
@@ -182,21 +182,22 @@ public class UserController : ControllerBase
 
         //* Create claims details based on the user information
         var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, configuration["Jwt:Subject"] ??
+                new Claim(JwtRegisteredClaimNames.Sub, this.configuration["Jwt:Subject"] ??
                     throw new ArgumentNullException("JWT subject is null")),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                 new Claim(ClaimTypes.Sid, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, ((int)user.Role).ToString())
             };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ??
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["Jwt:Key"] ??
                     throw new ArgumentNullException("JWT key is null")));
         var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
         var token = new JwtSecurityToken(
-            configuration["Jwt:Issuer"],
-            configuration["Jwt:Audience"],
+            this.configuration["Jwt:Issuer"],
+            this.configuration["Jwt:Audience"],
             claims,
             expires: DateTime.UtcNow.AddMinutes(25),
             signingCredentials: signIn);
@@ -215,7 +216,7 @@ public class UserController : ControllerBase
     /// <br/>
     /// <paramref name="entity" />: The user's new information.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "admin")]
     [HttpPut("{id:int}")]
     public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserToUpdate entity)
     {
@@ -255,7 +256,7 @@ public class UserController : ControllerBase
     /// <br/>
     /// <paramref name="entity" />: The user's new information.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "user")]
     [HttpPut]
     public IActionResult UpdateLoggedUser([FromBody] UserToUpdate entity)
     {
@@ -271,7 +272,7 @@ public class UserController : ControllerBase
     /// <br/>
     /// <paramref name="entity" />: The new passwords.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "admin")]
     [HttpPut("password/{id:int}")]
     public IActionResult UpdatePassword([FromRoute] int id, [FromBody] PasswordConfirm entity)
     {
@@ -308,7 +309,7 @@ public class UserController : ControllerBase
     /// <br/>
     /// <paramref name="entity" />: The user's old and new passwords.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = "user")]
     [HttpPut("password")]
     public IActionResult UpdateLoggedUserPassword([FromBody] PasswordToUpdate entity)
     {

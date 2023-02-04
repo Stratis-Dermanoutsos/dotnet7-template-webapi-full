@@ -2,10 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using webapi_full.Enums;
 
 namespace webapi_full.Models;
 
 [PrimaryKey("Id")]
+[Table("User")]
 public class User : IndexedObject
 {
     [Key]
@@ -32,6 +34,11 @@ public class User : IndexedObject
     [Column("Last_Name")]
     [JsonPropertyName("lastName")]
     public string LastName { get; set; } = string.Empty;
+
+    [Required]
+    [Column("Role")]
+    [JsonPropertyName("role")]
+    public Role Role { get; set; } = Role.User;
 
     [NotMapped]
     [JsonPropertyName("fullName")]
