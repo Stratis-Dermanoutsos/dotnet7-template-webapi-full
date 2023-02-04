@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using webapi_full.Attributes;
 using webapi_full.Entities.Request;
-using webapi_full.Enums;
 using webapi_full.Exceptions;
 using webapi_full.Extensions;
 using webapi_full.IUtils;
