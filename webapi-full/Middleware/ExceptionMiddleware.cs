@@ -31,8 +31,8 @@ public class ExceptionMiddleware : IMiddleware
             errorResult.Messages.Add(exception.Message);
 
             //* If the exception is not a custom exception, set the exception variable to the InnerException to be switched on in a moment.
-            if (exception is not CustomException && exception.InnerException != null)
-                while (exception.InnerException != null)
+            if (exception is not CustomException && exception.InnerException is not null)
+                while (exception.InnerException is not null)
                     exception = exception.InnerException;
 
             //* Switch on the exception to set the status code and error messages.
