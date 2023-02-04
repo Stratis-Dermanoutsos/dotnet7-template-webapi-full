@@ -182,7 +182,7 @@ public class UserController : ControllerBase
 
         //* Create claims details based on the user information
         var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, configuration["Jwt:Subject"] ??
+                new Claim(JwtRegisteredClaimNames.Sub, this.configuration["Jwt:Subject"] ??
                     throw new ArgumentNullException("JWT subject is null")),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
@@ -191,12 +191,12 @@ public class UserController : ControllerBase
                 new Claim(ClaimTypes.Email, user.Email)
             };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ??
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["Jwt:Key"] ??
                     throw new ArgumentNullException("JWT key is null")));
         var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
         var token = new JwtSecurityToken(
-            configuration["Jwt:Issuer"],
-            configuration["Jwt:Audience"],
+            this.configuration["Jwt:Issuer"],
+            this.configuration["Jwt:Audience"],
             claims,
             expires: DateTime.UtcNow.AddMinutes(25),
             signingCredentials: signIn);
