@@ -46,7 +46,8 @@ public static class JwtBearerOptionsExtension
                     Source = context.Request.Path,
                     Exception = exception,
                     ErrorId = errorId,
-                    SupportMessage = $"Provide the Error Id: {errorId} to the support team for further analysis."
+                    SupportMessage = $"Provide the Error Id: {errorId} to the support team for further analysis.",
+                    StatusCode = context.Response.StatusCode
                 };
                 errorResult.Messages.Add(exception);
 
