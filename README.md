@@ -8,6 +8,7 @@ This is a template meant to setup a fully implemented Web API application using 
 - [Technologies](#technologies)
 - [Usage](#usage)
 - [Swap DBMS](#swap-dbms)
+- [User roles](#user-roles)
 - [Uninstall](#uninstall)
 - [License](#license)
 
@@ -181,6 +182,84 @@ There are 2 **DataBase Management Systems** that I will include.
      options.UseNpgsql(builder.Configuration.GetConnectionString("Demo"))
    );
    ```
+
+## User roles
+
+### Declaring roles
+
+User roles are defined in 2 places for the app to work:
+
+1. The `Role` *enum*
+
+   This *enum* holds the available roles of the app as well as each role's index.
+
+   This index is important to the app's functionality and works in a simple manner: The higher the index, the more privileged the role.
+
+   The default enum holds the following values:
+
+   ```json
+   {
+     "User": 1,
+     "Admin": 2
+   }
+   ```
+
+   > Notice that the admin hes a higher index cause it's the superior role.
+
+2. Inside *Program.cs* to translate the enum values into "*policies*" that are used by the app.
+
+   ```c#
+   builder.Services.AddAuthorization(options =>
+   {
+       options.AddPolicy("admin", policy => policy.Requirements.Add(new RoleRequirement(Role.Admin)));
+       options.AddPolicy("user", policy => policy.Requirements.Add(new RoleRequirement(Role.User)));
+   });
+   ```
+
+   > After adding a role to the Enum, it is mandatory that it's also added it here.
+
+### User-authenticated services
+
+To authenticate any service for a user, simple add the `[Authorize]` attribute.
+
+It is important that the role is declared as well for the authorization to work.
+
+```c#
+[Authorize(Policy = "user")]
+[HttpGet]
+public IActionResult GetLoggedUser()
+{
+    User user = this.userUtils.GetLoggedUser(this.User);
+
+    Log.Information($"Retrieved user '{user.UserName}'.");
+
+    return Ok(user);
+}
+```
+
+> This is a service that can be used by any user.
+>
+> Remember that it's still not a public service and you have to be logged in to use it. It's just that no special role is needed.
+
+### Default administrator account
+
+Inside *appsettings.json*, there is the default administrator's credentials and important information.
+
+The application uses this information to automatically create the user on database's creation.
+
+The data is declared in the form of the following JSON:
+
+```json
+"DefaultAdmin": {
+  "Email": "admin@user.com",
+  "UserName": "admin_user",
+  "FirstName": "Admin",
+  "LastName": "User",
+  "Password": "123"
+}
+```
+
+> **It is recommended** that you change at least the email and password before proceeding.
 
 ## Uninstall
 
