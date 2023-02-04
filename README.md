@@ -76,6 +76,10 @@ This is a template meant to setup a fully implemented Web API application using 
      dotnet new install ./
      ```
 
+   > You might need to uninstall one version to install an updated one.
+   >
+   > To avoid this inconvenience, simply add the `--force` option in the above command.
+
 4. Create the project
 
    ```zsh
