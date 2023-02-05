@@ -26,6 +26,9 @@ public class UserUtils : IUserUtils
 
     public User? GetByUserName(string userName) => this.context.Users.SingleOrDefault(user => user.UserName.Equals(userName));
 
+    /// <summary>
+    /// Validate email address using the <c>MailAddress</c> class.
+    /// </summary>
     public void ValidateEmail(string value)
     {
         try {
@@ -40,6 +43,18 @@ public class UserUtils : IUserUtils
         }
     }
 
+    /// <summary>
+    /// Opinionated validation for username.
+    /// <list type="bullet">
+    /// <item>No whitespaces allowed</item>
+    /// <item>Maximum length of 40 characters</item>
+    /// <item>Minimum length of 6 characters</item>
+    /// <item>Allowed only specific non-alphanumeric characters: _ and -</item>
+    /// <item>Can only contain lowercase letters</item>
+    /// </list>
+    /// <br/>
+    /// <paramref name="value"/>: The string to validate.
+    /// </summary>
     public void ValidateUserName(string value)
     {
         StringBuilder errorMessage = new();

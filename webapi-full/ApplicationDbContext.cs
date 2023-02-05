@@ -31,7 +31,6 @@ public class ApplicationDbContext : DbContext
     /// <inheritdoc />
     /// <br />
     /// Overriden to
-    /// <br />
     /// <list type="bullet">
     /// <item>set <paramref name="DateIn" /> on creation</item>
     /// <item>update <paramref name="DateEdit" /> on any change</item>
