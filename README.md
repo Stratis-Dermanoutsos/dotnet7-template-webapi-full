@@ -45,6 +45,8 @@ This is a template meant to setup a fully implemented Web API application using 
   - *SQLite* already setup
   - Easily swap DBMS
 
+[⬆ Back to the Table of contents](#table-of-contents)
+
 ## Technologies
 
 - [.NET 7](https://dotnet.microsoft.com)
@@ -55,6 +57,8 @@ This is a template meant to setup a fully implemented Web API application using 
 - [Serilog](https://serilog.net)
 - [SQLite](https://sqlite.org)
 - [Swagger](https://swagger.io)
+
+[⬆ Back to the Table of contents](#table-of-contents)
 
 ## Usage
 
@@ -114,6 +118,8 @@ This is a template meant to setup a fully implemented Web API application using 
    ```zsh
    dotnet watch run
    ```
+
+[⬆ Back to the Table of contents](#table-of-contents)
 
 ## Swap DBMS
 
@@ -183,6 +189,8 @@ There are 2 **DataBase Management Systems** that I will include.
      options.UseNpgsql(builder.Configuration.GetConnectionString("Demo"))
    );
    ```
+
+[⬆ Back to the Table of contents](#table-of-contents)
 
 ## User roles
 
@@ -261,6 +269,8 @@ The data is declared in the form of the following JSON:
 ```
 
 > **It is recommended** that you change at least the email and password before proceeding.
+
+[⬆ Back to the Table of contents](#table-of-contents)
 
 ## User credentials validators
 
@@ -414,6 +424,8 @@ To edit the password validation, you (may) have to do 3 things:
 
   > If you just change the values of the existing rules, there's no need for it.
 
+[⬆ Back to the Table of contents](#table-of-contents)
+
 ## Uninstall
 
 To uninstall the template, simply do the following:
@@ -437,6 +449,10 @@ To uninstall the template, simply do the following:
      dotnet new uninstall ./
      ```
 
+[⬆ Back to the Table of contents](#table-of-contents)
+
 ## License
 
 **dotnet-template-webapi-full** is licensed under [GNU General Public License v3.0](https://github.com/Stratis-Dermanoutsos/dotnet-template-webapi-full/blob/main/LICENSE).
+
+[⬆ Back to the Table of contents](#table-of-contents)
