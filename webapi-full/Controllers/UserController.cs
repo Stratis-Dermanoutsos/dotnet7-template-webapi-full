@@ -62,7 +62,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Get user by username.
+    /// Get a user by username.
     /// </summary>
     [HttpGet]
     [Route("{userName}")]
@@ -77,7 +77,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Get user by id.
+    /// Get a user by id.
     /// </summary>
     [Authorize(Policy = "admin")]
     [HttpGet]
@@ -128,7 +128,6 @@ public class UserController : ControllerBase
     /// <paramref name="entity" />: The user's information.
     /// </summary>
     [HttpPost]
-    [Route("register")]
     public IActionResult Register([FromBody] UserToCreate entity)
     {
         //* Validate credentials
@@ -217,7 +216,8 @@ public class UserController : ControllerBase
     /// <paramref name="entity" />: The user's new information.
     /// </summary>
     [Authorize(Policy = "admin")]
-    [HttpPut("{id:int}")]
+    [HttpPut]
+    [Route("{id:int}")]
     public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserToUpdate entity)
     {
         //* Validate user's information
@@ -273,7 +273,8 @@ public class UserController : ControllerBase
     /// <paramref name="entity" />: The new passwords.
     /// </summary>
     [Authorize(Policy = "admin")]
-    [HttpPut("password/{id:int}")]
+    [HttpPut]
+    [Route("password/{id:int}")]
     public IActionResult UpdatePassword([FromRoute] int id, [FromBody] PasswordConfirm entity)
     {
         if (!entity.Password.Equals(entity.PasswordConfirmation))
@@ -310,7 +311,8 @@ public class UserController : ControllerBase
     /// <paramref name="entity" />: The user's old and new passwords.
     /// </summary>
     [Authorize(Policy = "user")]
-    [HttpPut("password")]
+    [HttpPut]
+    [Route("password")]
     public IActionResult UpdateLoggedUserPassword([FromBody] PasswordToUpdate entity)
     {
         User user = this.userUtils.GetLoggedUser(this.User);
