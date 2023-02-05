@@ -278,7 +278,7 @@ Usernames:
   - `-`
 - Cannot have any uppercase letters.
 
-To return the whole list of rules and mark the invalid ones, the formatted message returned in an ***HTML*** `<ul></ul>` tag.
+To return the whole list of rules and mark the invalid ones, the formatted message is returned as an ***HTML*** `<ul></ul>` tag.
 
 More specifically, here is an example of the validation having failed:
 
@@ -292,6 +292,8 @@ More specifically, here is an example of the validation having failed:
 </ul>
 ```
 
+> To edit this validator, you'll have to edit the code as the rules were hardcoded. This happened due to the username validation following a standard.
+>
 > In the above example, all validators passed except for the one enforcing a maximum length of 40 characters.
 
 ### Email
@@ -300,7 +302,117 @@ The email validation is pretty straightforward.
 
 All the addresses provided by the user are valid as long as they stick to the format.
 
+I see no point in changing this validator but you are free to do so in your code.
+
 > Both `ValidateEmail` and `ValidateUserName` methods are defined as part of the `IUserUtils` interface.
+
+### Password
+
+Password validation is the most complex and easily customizable and so its rules are defined in the *appsettings.json* file.
+
+On the app's generation, you will find this part in the previously mentioned file:
+
+```json
+"PasswordValidator": {
+  "AllowedNonAlphanumeric": "!@#$._-",
+  "MaxLength": 16,
+  "MinLength": 8,
+  "RequireDigit": false,
+  "RequireLowercase": true,
+  "RequireNonAlphanumeric": true,
+  "RequireUppercase": true
+},
+```
+
+What this does is:
+
+- #### Allowed Non-Alphanumeric
+
+  This rule sets the allowed non-alphanumeric characters that the password string in allowed to have.
+
+  The characters must not be separated by anything. Just put them all in the json string.
+
+  > To not allow any non-alphanumeric, make the value an empty string.
+
+- #### Max Length
+
+  The max length does what its name implies.
+
+  If you set it to a number, the password string cannot exceed that many characters in length.
+
+  > To stop enforcing a maximum length for passwords, set the value to 0.
+
+- #### Min Length
+
+  Works like its [Max Length](#max-length) counterpart.
+
+  Passwords cannot have less characters than the number set for this field.
+
+  > To stop enforcing a minimum length for passwords, set the value to 0.
+
+- #### Require Digit
+
+  This is a `Boolean` variable.
+
+  If set to true, the user will have to use at least 1 digit (`[0-9]`) for their password.
+
+  > To not enforce this rule, set its value to `false`.
+
+- #### Require Lowercase
+
+  This is a `Boolean` variable.
+
+  If set to true, the user will have to use at least 1 lowercase letter for their password.
+
+  > To not enforce this rule, set its value to `false`.
+
+- #### Require Non-Alphanumeric
+
+  This is a `Boolean` variable.
+
+  If set to true, the user will have to use at least 1 of the [Allowed Non-Alphanumeric](#allowed-non-alphanumeric) characters for their password.
+
+  > To not enforce this rule, set its value to `false`.
+
+- #### Require Uppercase
+
+  This is a `Boolean` variable.
+
+  If set to true, the user will have to use at least 1 uppercase letter for their password.
+
+  > To not enforce this rule, set its value to `false`.
+
+- Also, by default, passwords cannot contain any whitespace characters.
+
+To return the whole list of rules and mark the invalid ones, the formatted message is returned as an ***HTML*** `<ul></ul>` tag.
+
+More specifically, here is an example of the validation having failed:
+
+```html
+<ul class='password-validation'>
+  <li class='valid'>Password cannot contain whitespaces.</li>
+  <li class='invalid'>The only allowed special characters are the following: !, @, #, $, ., _, -</li>
+  <li class='valid'>Password cannot exceed 16 characters.</li>
+  <li class='invalid'>Password must be at least 8 characters long.</li>
+  <li class='valid'>Password must contain at least one digit.</li>
+  <li class='valid'>Password must contain at least one lowercase letter.</li>
+</ul>
+```
+
+> In the above example, the password was almost valid but it:
+> 
+> - contained an not-allowed non-alphanumeric character and
+> - was too short.
+
+To edit the password validation, you (may) have to do 3 things:
+
+- Edit the rules inside the *appsettings.json* file.
+- Edit the `PasswordValidator` class to match those rules.
+
+  > If you just change the values of the existing rules, there's no need for it.
+- Edit the logic of the validation declared as a part of the `IPasswordUtils` interface inside the provided implementation class or by creating your own.
+
+  > If you just change the values of the existing rules, there's no need for it.
 
 ## Uninstall
 
