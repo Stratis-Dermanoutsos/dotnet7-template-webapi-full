@@ -1,15 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using webapi_full.Attributes;
 using webapi_full.Entities.Request;
-using webapi_full.Exceptions;
-using webapi_full.Extensions;
-using webapi_full.IUtils;
-using webapi_full.Models;
+using webapi_full.IServices;
 
 namespace webapi_full.Controllers;
 
@@ -19,18 +12,9 @@ namespace webapi_full.Controllers;
 [Logged]
 public class UserController : ControllerBase
 {
-    private readonly ApplicationDbContext dbContext;
-    private readonly IPasswordUtils passwordUtils;
-    private readonly IConfiguration configuration;
-    private readonly IUserUtils userUtils;
+    private readonly IUserService userService;
 
-    public UserController(IConfiguration configuration, ApplicationDbContext dbContext, IPasswordUtils passwordUtils, IUserUtils userUtils)
-    {
-        this.configuration = configuration;
-        this.dbContext = dbContext;
-        this.passwordUtils = passwordUtils;
-        this.userUtils = userUtils;
-    }
+    public UserController(IUserService userService) => this.userService = userService;
 
     #region GET methods
     /// <summary>
@@ -39,13 +23,7 @@ public class UserController : ControllerBase
     [HttpGet]
     [Route("all")]
     public IActionResult GetAll()
-    {
-        IQueryable<User> users = this.dbContext.Users.GetAll();
-
-        Log.Information($"Retrieved {users.Count()} users.");
-
-        return Ok(users);
-    }
+        => Ok(this.userService.GetAll());
 
     /// <summary>
     /// Get the logged user.
@@ -53,44 +31,24 @@ public class UserController : ControllerBase
     [Authorize(Policy = "user")]
     [HttpGet]
     public IActionResult GetLoggedUser()
-    {
-        User user = this.userUtils.GetLoggedUser(this.User);
-
-        Log.Information($"Retrieved user '{user.UserName}'.");
-
-        return Ok(user);
-    }
+        => Ok(this.userService.GetLoggedUser(this.User));
 
     /// <summary>
-    /// Get user by username.
+    /// Get a user by username.
     /// </summary>
     [HttpGet]
     [Route("{userName}")]
     public IActionResult GetByUserName([FromRoute] string userName)
-    {
-        User? user = this.userUtils.GetByUserName(userName);
-
-        if (user is null)
-            throw new NotFoundException($"There is no user account associated with the username '{userName}'.");
-
-        return Ok(user);
-    }
+        => Ok(this.userService.GetByUsername(userName));
 
     /// <summary>
-    /// Get user by id.
+    /// Get a user by id.
     /// </summary>
     [Authorize(Policy = "admin")]
     [HttpGet]
     [Route("{id:int}")]
     public IActionResult GetById([FromRoute] int id)
-    {
-        User? user = this.dbContext.Users.Get(id);
-
-        if (user is null)
-            throw new NotFoundException($"There is no user account associated with the id '{id}'.");
-
-        return Ok(user);
-    }
+        => Ok(this.userService.GetById(id));
     #endregion
 
     #region DELETE methods
@@ -101,24 +59,7 @@ public class UserController : ControllerBase
     [HttpDelete]
     [Route("{id:int}")]
     public IActionResult Delete([FromRoute] int id)
-    {
-        User? user = this.dbContext.Users.GetAll().Get(id);
-
-        if (user is null)
-            throw new NotFoundException($"There is no user account associated with the id '{id}'.");
-
-        if (user.Id == this.userUtils.GetLoggedUserId(this.User))
-            throw new BadRequestException("You cannot delete your own account.");
-
-        string usernameOld = user.UserName;
-
-        this.dbContext.Users.Remove(user);
-        this.dbContext.SaveChanges();
-
-        Log.Information($"Deleted user '{usernameOld}'.");
-
-        return Ok(user);
-    }
+        => Ok(this.userService.Delete(id, this.User));
     #endregion
 
     #region POST methods
@@ -128,40 +69,8 @@ public class UserController : ControllerBase
     /// <paramref name="entity" />: The user's information.
     /// </summary>
     [HttpPost]
-    [Route("register")]
     public IActionResult Register([FromBody] UserToCreate entity)
-    {
-        //* Validate credentials
-        try {
-            this.userUtils.ValidateEmail(entity.Email);
-            this.passwordUtils.Validate(entity.Password);
-            this.userUtils.ValidateUserName(entity.UserName);
-        } catch (Exception exception) {
-            throw new BadRequestException(exception.Message);
-        }
-
-        //* Check if email exists
-        if (this.userUtils.GetByEmail(entity.Email) is not null)
-            throw new ConflictException($"Email {entity.Email} belongs to another user.");
-
-        //* Check if userName exists
-        if (this.userUtils.GetByUserName(entity.UserName) is not null)
-            throw new ConflictException($"Username {entity.UserName} belongs to another user.");
-
-        //* Get the User object
-        User user = entity.ToUser();
-
-        //* Encrypt the user's password
-        user.Password = this.passwordUtils.Encrypt(user.Password);
-
-        //* Add the user to the database
-        this.dbContext.Users.Add(user);
-        this.dbContext.SaveChanges();
-
-        Log.Information($"Registered user '{user.UserName}'.");
-
-        return Ok(user);
-    }
+        => Ok(this.userService.Register(entity));
 
     /// <summary>
     /// Create a new session for a registered user.
@@ -171,41 +80,7 @@ public class UserController : ControllerBase
     [HttpPost]
     [Route("login")]
     public IActionResult Login([FromBody] UserCredentials credentials)
-    {
-        User? user = this.userUtils.GetByEmail(credentials.Email);
-
-        if (user is null)
-            throw new NotFoundException($"There is no user account associated with the email address '{credentials.Email}'.");
-
-        if (!passwordUtils.Check(credentials.Password, user.Password))
-            throw new BadRequestException("Wrong email or password.");
-
-        //* Create claims details based on the user information
-        var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, this.configuration["Jwt:Subject"] ??
-                    throw new ArgumentNullException("JWT subject is null")),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                new Claim(ClaimTypes.Sid, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, ((int)user.Role).ToString())
-            };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["Jwt:Key"] ??
-                    throw new ArgumentNullException("JWT key is null")));
-        var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-        var token = new JwtSecurityToken(
-            this.configuration["Jwt:Issuer"],
-            this.configuration["Jwt:Audience"],
-            claims,
-            expires: DateTime.UtcNow.AddMinutes(25),
-            signingCredentials: signIn);
-
-        Log.Information($"User '{user.UserName}' logged in.");
-
-        return Ok(new JwtSecurityTokenHandler().WriteToken(token));
-    }
+        => Ok(this.userService.Login(credentials));
     #endregion
 
     #region PUT methods
@@ -217,39 +92,10 @@ public class UserController : ControllerBase
     /// <paramref name="entity" />: The user's new information.
     /// </summary>
     [Authorize(Policy = "admin")]
-    [HttpPut("{id:int}")]
+    [HttpPut]
+    [Route("{id:int}")]
     public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserToUpdate entity)
-    {
-        //* Validate user's information
-        try {
-            this.userUtils.ValidateEmail(entity.Email);
-            this.userUtils.ValidateUserName(entity.UserName);
-        } catch (Exception exception) {
-            throw new BadRequestException(exception.Message);
-        }
-
-        User? user = this.dbContext.Users.Get(id);
-
-        if (user is null)
-            throw new NotFoundException($"There is no user account associated with the id '{id}'.");
-
-        //* Check if email exists
-        if (entity.Email != user.Email && this.userUtils.GetByEmail(entity.Email) is not null)
-            throw new ConflictException($"Email {entity.Email} belongs to another user.");
-
-        //* Check if userName exists
-        if (entity.UserName != user.UserName && this.userUtils.GetByUserName(entity.UserName) is not null)
-            throw new ConflictException($"Username {entity.UserName} belongs to another user.");
-
-        //* Update the user's information
-        user = entity.MergeToUser(user);
-
-        //* Update the user
-        this.dbContext.Users.Update(user);
-        this.dbContext.SaveChanges();
-
-        return Ok(user);
-    }
+        => Ok(this.userService.UpdateUser(id, entity));
 
     /// <summary>
     /// Update the logged user's information.
@@ -259,11 +105,7 @@ public class UserController : ControllerBase
     [Authorize(Policy = "user")]
     [HttpPut]
     public IActionResult UpdateLoggedUser([FromBody] UserToUpdate entity)
-    {
-        int id = this.userUtils.GetLoggedUserId(this.User);
-
-        return this.UpdateUser(id, entity);
-    }
+        => Ok(this.userService.UpdateLoggedUser(entity, this.User));
 
     /// <summary>
     /// Update a user's password.
@@ -273,36 +115,10 @@ public class UserController : ControllerBase
     /// <paramref name="entity" />: The new passwords.
     /// </summary>
     [Authorize(Policy = "admin")]
-    [HttpPut("password/{id:int}")]
+    [HttpPut]
+    [Route("password/{id:int}")]
     public IActionResult UpdatePassword([FromRoute] int id, [FromBody] PasswordConfirm entity)
-    {
-        if (!entity.Password.Equals(entity.PasswordConfirmation))
-            throw new BadRequestException("Passwords do not match.");
-
-        //* Validate the password
-        try {
-            this.passwordUtils.Validate(entity.Password);
-        } catch (Exception exception) {
-            throw new BadRequestException(exception.Message);
-        }
-
-        User? user = this.dbContext.Users.Get(id);
-
-        if (user is null)
-            throw new NotFoundException($"There is no user account associated with the id '{id}'.");
-
-        if (passwordUtils.Check(entity.Password, user.Password))
-            throw new BadRequestException("The new password must be different from the old one.");
-
-        //* Set the user's new password
-        user.Password = this.passwordUtils.Encrypt(entity.Password);
-
-        //* Update the user
-        this.dbContext.Users.Update(user);
-        this.dbContext.SaveChanges();
-
-        return Ok(user);
-    }
+        => Ok(this.userService.UpdatePassword(id, entity));
 
     /// <summary>
     /// Update the logged user's password.
@@ -310,15 +126,9 @@ public class UserController : ControllerBase
     /// <paramref name="entity" />: The user's old and new passwords.
     /// </summary>
     [Authorize(Policy = "user")]
-    [HttpPut("password")]
+    [HttpPut]
+    [Route("password")]
     public IActionResult UpdateLoggedUserPassword([FromBody] PasswordToUpdate entity)
-    {
-        User user = this.userUtils.GetLoggedUser(this.User);
-
-        if (!passwordUtils.Check(entity.OldPassword, user.Password))
-            throw new UnauthorizedException("Wrong password.");
-
-        return this.UpdatePassword(user.Id, entity);
-    }
+        => Ok(this.userService.UpdateLoggedUserPassword(entity, this.User));
     #endregion
 }

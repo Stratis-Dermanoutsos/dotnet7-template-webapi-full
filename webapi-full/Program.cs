@@ -10,8 +10,10 @@ using Microsoft.OpenApi.Models;
 using webapi_full;
 using webapi_full.Enums;
 using webapi_full.Extensions;
+using webapi_full.IServices;
 using webapi_full.IUtils;
 using webapi_full.Middleware;
+using webapi_full.Services;
 using webapi_full.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -103,6 +105,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IUserUtils, UserUtils>();
 builder.Services.AddScoped<IPasswordUtils, PasswordUtils>();
 builder.Services.AddSingleton<IAuthorizationHandler, RoleAuthorizationHandler>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 //? Load PasswordValidator settings and register for injection
 builder.Services.AddSingleton<PasswordValidator>(
