@@ -410,7 +410,7 @@ More specifically, here is an example of the validation having failed:
 ```
 
 > In the above example, the password was almost valid but it:
-> 
+>
 > - contained an not-allowed non-alphanumeric character and
 > - was too short.
 
