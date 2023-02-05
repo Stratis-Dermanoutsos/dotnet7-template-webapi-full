@@ -9,6 +9,7 @@ This is a template meant to setup a fully implemented Web API application using 
 - [Usage](#usage)
 - [Swap DBMS](#swap-dbms)
 - [User roles](#user-roles)
+- [User credentials validators](#user-credentials-validators)
 - [Uninstall](#uninstall)
 - [License](#license)
 
@@ -260,6 +261,46 @@ The data is declared in the form of the following JSON:
 ```
 
 > **It is recommended** that you change at least the email and password before proceeding.
+
+## User credentials validators
+
+### Username
+
+Username validation is simple but opinionated.
+
+Usernames:
+
+- Must not include any *whitespace* characters.
+- Must have a maximum length of 40 characters.
+- Must have a minimum length of 6 characters.
+- Only allow specific non-alphanumeric characters:
+  - `_`
+  - `-`
+- Cannot have any uppercase letters.
+
+To return the whole list of rules and mark the invalid ones, the formatted message returned in an ***HTML*** `<ul></ul>` tag.
+
+More specifically, here is an example of the validation having failed:
+
+```html
+<ul class='username-validation'>
+  <li class='valid'>Username cannot contain whitespaces.</li>
+  <li class='invalid'>Username cannot exceed 40 characters.</li>
+  <li class='valid'>Username must be at least 6 characters long.</li>
+  <li class='valid'>The only allowed special characters are the following: -, _</li>
+  <li class='valid'>Username must be lowercase.</li>
+</ul>
+```
+
+> In the above example, all validators passed except for the one enforcing a maximum length of 40 characters.
+
+### Email
+
+The email validation is pretty straightforward.
+
+All the addresses provided by the user are valid as long as they stick to the format.
+
+> Both `ValidateEmail` and `ValidateUserName` methods are defined as part of the `IUserUtils` interface.
 
 ## Uninstall
 
