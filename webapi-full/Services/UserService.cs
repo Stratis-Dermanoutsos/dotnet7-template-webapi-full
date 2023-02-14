@@ -74,13 +74,10 @@ public class UserService : IUserService
     /// <inheritdoc/>
     public User Delete(int id, ClaimsPrincipal principal)
     {
-        User? user = this.dbContext.Users.GetAll().Get(id);
-
-        if (user is null)
-            throw new NotFoundException($"There is no user account associated with the id {id}.");
-
-        if (user.Id == this.userUtils.GetLoggedUserId(principal))
+        if (id == this.userUtils.GetLoggedUserId(principal))
             throw new BadRequestException("You cannot delete your own account.");
+
+        User user = this.GetById(id);
 
         string usernameOld = user.UserName;
 
@@ -180,10 +177,7 @@ public class UserService : IUserService
             throw new BadRequestException(exception.Message);
         }
 
-        User? user = this.dbContext.Users.Get(id);
-
-        if (user is null)
-            throw new NotFoundException($"There is no user account associated with the id {id}.");
+        User user = this.GetById(id);
 
         //* Check if email exists
         if (entity.Email != user.Email && this.userUtils.GetByEmail(entity.Email) is not null)
@@ -224,10 +218,7 @@ public class UserService : IUserService
             throw new BadRequestException(exception.Message);
         }
 
-        User? user = this.dbContext.Users.Get(id);
-
-        if (user is null)
-            throw new NotFoundException($"There is no user account associated with the id {id}.");
+        User user = this.GetById(id);
 
         if (passwordUtils.Check(entity.Password, user.Password))
             throw new BadRequestException("The new password must be different from the old one.");
