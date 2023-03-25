@@ -56,11 +56,16 @@ public interface IUserUtils
     void ValidateEmail(string value);
 
     /// <summary>
-    /// Validate username.
+    /// Opinionated validation for username.
+    /// <list type="bullet">
+    /// <item>No whitespaces allowed</item>
+    /// <item>Maximum length of 40 characters</item>
+    /// <item>Minimum length of 6 characters</item>
+    /// <item>Allowed only specific non-alphanumeric characters: _ and -</item>
+    /// <item>Can only contain lowercase letters</item>
+    /// </list>
     /// <br/>
-    /// <paramref name="value" />: The username to validate.
-    /// <br/>
-    /// Throws if the username is invalid.
+    /// <paramref name="value"/>: The string to validate.
     /// </summary>
     void ValidateUserName(string value);
 }

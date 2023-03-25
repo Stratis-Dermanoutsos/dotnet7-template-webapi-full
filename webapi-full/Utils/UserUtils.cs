@@ -13,6 +13,7 @@ public class UserUtils : IUserUtils
 
     public UserUtils(ApplicationDbContext context) => this.context = context;
 
+    /// <inheritdoc />
     public int GetLoggedUserId(ClaimsPrincipal principal)
     {
         ClaimsIdentity? claimsIdentity = principal.Identity as ClaimsIdentity;
@@ -20,15 +21,16 @@ public class UserUtils : IUserUtils
         return Convert.ToInt32(claimsIdentity?.FindFirst(ClaimTypes.Sid)?.Value);
     }
 
+    /// <inheritdoc />
     public User GetLoggedUser(ClaimsPrincipal principal) => this.context.Users.GetAssured(this.GetLoggedUserId(principal));
 
+    /// <inheritdoc />
     public User? GetByEmail(string email) => this.context.Users.SingleOrDefault(user => user.Email.Equals(email));
 
+    /// <inheritdoc />
     public User? GetByUserName(string userName) => this.context.Users.SingleOrDefault(user => user.UserName.Equals(userName));
 
-    /// <summary>
-    /// Validate email address using the <c>MailAddress</c> class.
-    /// </summary>
+    /// <inheritdoc />
     public void ValidateEmail(string value)
     {
         try {
@@ -43,18 +45,7 @@ public class UserUtils : IUserUtils
         }
     }
 
-    /// <summary>
-    /// Opinionated validation for username.
-    /// <list type="bullet">
-    /// <item>No whitespaces allowed</item>
-    /// <item>Maximum length of 40 characters</item>
-    /// <item>Minimum length of 6 characters</item>
-    /// <item>Allowed only specific non-alphanumeric characters: _ and -</item>
-    /// <item>Can only contain lowercase letters</item>
-    /// </list>
-    /// <br/>
-    /// <paramref name="value"/>: The string to validate.
-    /// </summary>
+    /// <inheritdoc />
     public void ValidateUserName(string value)
     {
         StringBuilder errorMessage = new();
