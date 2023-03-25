@@ -37,8 +37,8 @@ public class UserUtils : IUserUtils
             var addr = new MailAddress(value);
 
             //? Handle special cases
-            if (!value.Any(c => c.Equals('@')) || value.Any(Char.IsWhiteSpace)
-                || !value.Any(c => c.Equals('.')) || value.EndsWith('.'))
+            if (!value.Any(character => character.Equals('@')) || value.Any(Char.IsWhiteSpace)
+                || !value.Any(character => character.Equals('.')) || value.EndsWith('.'))
                 throw new Exception();
         } catch (Exception) {
             throw new ArgumentException("Invalid email address.");
@@ -69,9 +69,9 @@ public class UserUtils : IUserUtils
         //? Allowed only specific non-alphanumeric [_-]
         errorMessage.Append("<li class='");
         errorMessage.Append(
-            value.Any(c => !char.IsLetterOrDigit(c)
-            && c != '_'
-            && c != '-')
+            value.Any(character => !char.IsLetterOrDigit(character)
+            && character != '_'
+            && character != '-')
                 ? "invalid"
                 : "valid");
         errorMessage.Append("'>The only allowed special characters are the following: -, _</li>");

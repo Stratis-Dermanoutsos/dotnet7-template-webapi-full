@@ -30,8 +30,8 @@ public class PasswordUtils : IPasswordUtils
         if (!string.IsNullOrWhiteSpace(validator.AllowedNonAlphanumeric) && !value.All(char.IsLetterOrDigit)) {
             errorMessage.Append("<li class='");
             errorMessage.Append(
-                value.Any(c => !char.IsLetterOrDigit(c)
-                && !validator.AllowedNonAlphanumeric.Contains(c))
+                value.Any(character => !char.IsLetterOrDigit(character)
+                && !validator.AllowedNonAlphanumeric.Contains(character))
                     ? "invalid"
                     : "valid");
             errorMessage.Append($"'>The only allowed special characters are the following: {string.Join(", ", validator.AllowedNonAlphanumeric.ToCharArray())}</li>");

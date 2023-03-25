@@ -42,10 +42,10 @@ public class ApplicationDbContext : DbContext
     {
         var entries = ChangeTracker
             .Entries()
-            .Where(e => e.Entity is IndexedObject && (
-                e.State == EntityState.Added ||
-                e.State == EntityState.Modified ||
-                e.State == EntityState.Deleted));
+            .Where(entity => entity.Entity is IndexedObject && (
+                entity.State == EntityState.Added ||
+                entity.State == EntityState.Modified ||
+                entity.State == EntityState.Deleted));
 
         foreach (var entityEntry in entries)
         {
@@ -82,7 +82,7 @@ public class ApplicationDbContext : DbContext
     /// </summary>
     private void CreateDefaultAdmin()
     {
-        if (this.Users.Any(u => u.Role == Role.Admin))
+        if (this.Users.Any(user => user.Role == Role.Admin))
             return;
 
         var userInfo = this.configuration.GetSection("DefaultAdmin");

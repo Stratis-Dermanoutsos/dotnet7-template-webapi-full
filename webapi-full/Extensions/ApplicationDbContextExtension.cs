@@ -13,7 +13,7 @@ public static class DbContextExtension
     /// </returns>
     /// </summary>
     public static IQueryable<T> GetAll<T>(this IQueryable<T> entities)
-        where T : IndexedObject => entities.Where(i => !i.IsDeleted);
+        where T : IndexedObject => entities.Where(entity => !entity.IsDeleted);
 
     /// <summary>
     /// <paramref name="entities" />
@@ -28,7 +28,7 @@ public static class DbContextExtension
     /// </returns>
     /// </summary>
     public static T? Get<T>(this IQueryable<T> entities, int id)
-        where T : IndexedObject => entities.SingleOrDefault(i => i.Id == id);
+        where T : IndexedObject => entities.SingleOrDefault(entity => entity.Id == id);
 
     /// <summary>
     /// <paramref name="entities" />
@@ -40,5 +40,5 @@ public static class DbContextExtension
     /// <returns>Returns an <paramref name="Entity" /> with the given <paramref name="id" />.</returns>
     /// </summary>
     public static T GetAssured<T>(this IQueryable<T> entities, int id)
-        where T : IndexedObject => entities.Single(i => i.Id == id);
+        where T : IndexedObject => entities.Single(entity => entity.Id == id);
 }
