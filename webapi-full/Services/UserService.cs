@@ -137,26 +137,29 @@ public class UserService : IUserService
         if (!passwordUtils.Check(credentials.Password, user.Password))
             throw new BadRequestException("Wrong email or password.");
 
-        //* Create claims details based on the user information
-        var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, this.configuration["Jwt:Subject"] ??
-                    throw new ArgumentNullException("JWT subject is null")),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                new Claim(ClaimTypes.Sid, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, ((int)user.Role).ToString())
-            };
+        string tokenSecret = this.configuration["Jwt:Key"]!;
+        TimeSpan tokenLifetime = TimeSpan.FromHours(8);
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration["Jwt:Key"] ??
-                    throw new ArgumentNullException("JWT key is null")));
+        JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSecret));
+
+        //* Create claims details based on the user information
+        var claims = new List<Claim> {
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Sub, user.Email),
+            new(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+            new(ClaimTypes.Sid, user.Id.ToString()),
+            new(ClaimTypes.Name, user.FullName),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, ((int)user.Role).ToString())
+        };
+
         var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
         var token = new JwtSecurityToken(
             this.configuration["Jwt:Issuer"],
             this.configuration["Jwt:Audience"],
             claims,
-            expires: DateTime.UtcNow.AddMinutes(25),
+            expires: DateTime.UtcNow.Add(tokenLifetime),
             signingCredentials: signIn);
 
         Log.Information($"User {user.UserName} logged in.");

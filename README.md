@@ -189,25 +189,25 @@ There are 2 **DataBase Management Systems** that I will include.
      options.UseNpgsql(builder.Configuration.GetConnectionString("Demo"))
    );
    ```
-   
+
 4. **PostgreSQL** requires some extra steps for this solution to run.
 
    1. Change the `Is_Deleted` property of class `IndexedObject` as this DBMS does not support the `bit` type.
-   
+
       ```csharp
       [Required]
       [Column("Is_Deleted")]
       [JsonIgnore]
       public bool IsDeleted { get; set; } = false;
       ```
-      
+
    2. Add the following inside *Program.cs* right after step 3's code.
-   
+
       ```csharp
       AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
       AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
       ```
-      
+
       > This is essential for **Postgre** to support our `DateTime` properties.
 
 [⬆ Back to the Table of contents](#table-of-contents)

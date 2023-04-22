@@ -74,7 +74,6 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-//? Add authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -82,19 +81,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters()
         {
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey
+                (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                .GetBytes(builder.Configuration["Jwt:Key"] ??
-                    throw new ArgumentNullException("JWT key is null")))
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true
         };
         //? Custom extension method to handle JWT errors (401 & 403)
         options.SetupJwtBearerEvents();
     });
 
-//? Add authorization
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("admin", policy => policy.Requirements.Add(new RoleRequirement(Role.Admin)));
@@ -133,6 +132,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
